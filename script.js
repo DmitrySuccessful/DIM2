@@ -40,9 +40,161 @@ function generateReferralCode() {
     return code;
 }
 
+// Базовые товары
+const baseProducts = {
+    clothes: [
+        { id: 'tshirt1', type: 'tshirt', name: 'Базовая футболка', buyPrice: 100, sellPrice: 150, quantity: 0 },
+        { id: 'tshirt2', type: 'tshirt', name: 'Премиум футболка', buyPrice: 200, sellPrice: 300, quantity: 0 },
+        { id: 'jeans1', type: 'jeans', name: 'Классические джинсы', buyPrice: 300, sellPrice: 450, quantity: 0 },
+        { id: 'jeans2', type: 'jeans', name: 'Модные джинсы', buyPrice: 400, sellPrice: 600, quantity: 0 }
+    ],
+    shoes: [
+        { id: 'sneakers1', type: 'sneakers', name: 'Повседневные кроссовки', buyPrice: 500, sellPrice: 750, quantity: 0 },
+        { id: 'sneakers2', type: 'sneakers', name: 'Спортивные кроссовки', buyPrice: 600, sellPrice: 900, quantity: 0 }
+    ],
+    accessories: [
+        { id: 'bag1', type: 'bag', name: 'Городской рюкзак', buyPrice: 200, sellPrice: 300, quantity: 0 },
+        { id: 'bag2', type: 'bag', name: 'Модная сумка', buyPrice: 400, sellPrice: 600, quantity: 0 }
+    ]
+};
+
+// Инициализация магазина
+function initShop() {
+    if (gameState.inventory.length === 0) {
+        Object.values(baseProducts).forEach(category => {
+            category.forEach(product => {
+                gameState.inventory.push({ ...product });
+            });
+        });
+    }
+    updateShopUI();
+}
+
+// Обновление интерфейса магазина
+function updateShopUI() {
+    const shopGrid = document.querySelector('.shop-grid');
+    shopGrid.innerHTML = '';
+
+    const activeCategory = document.querySelector('.category-btn.active')?.dataset.category || 'all';
+    
+    Object.entries(baseProducts).forEach(([category, products]) => {
+        if (activeCategory === 'all' || activeCategory === category) {
+            products.forEach(product => {
+                const inventoryItem = gameState.inventory.find(item => item.id === product.id);
+                const productElement = createProductElement(inventoryItem || product);
+                shopGrid.appendChild(productElement);
+            });
+        }
+    });
+}
+
+// Создание элемента товара
+function createProductElement(product) {
+    const element = document.createElement('div');
+    element.className = 'product-item';
+    element.dataset.category = getProductCategory(product);
+    
+    element.innerHTML = `
+        <div class="product-image">
+            <svg viewBox="0 0 100 100" class="product-icon">
+                <use href="#${product.type}"/>
+            </svg>
+        </div>
+        <div class="product-info">
+            <h3>${product.name}</h3>
+            <p>Закупка: ${product.buyPrice} 💰</p>
+            <p>Продажа: ${product.sellPrice} 💰</p>
+            <p>В наличии: ${product.quantity}</p>
+        </div>
+        <div class="product-actions">
+            <button onclick="buyProduct('${product.id}')" ${gameState.money < product.buyPrice ? 'disabled' : ''}>
+                Купить
+            </button>
+            <button onclick="sellProduct('${product.id}')" ${product.quantity <= 0 ? 'disabled' : ''}>
+                Продать
+            </button>
+        </div>
+    `;
+    
+    return element;
+}
+
+// Определение категории товара
+function getProductCategory(product) {
+    for (const [category, products] of Object.entries(baseProducts)) {
+        if (products.some(p => p.id === product.id)) {
+            return category;
+        }
+    }
+    return 'other';
+}
+
+// Покупка товара
+function buyProduct(productId) {
+    const product = gameState.inventory.find(item => item.id === productId);
+    if (!product) return;
+    
+    if (gameState.money >= product.buyPrice) {
+        gameState.money -= product.buyPrice;
+        product.quantity++;
+        gameState.reputation += 1;
+        
+        if (gameState.reputation >= 100) {
+            levelUp();
+        }
+        
+        saveGameState();
+        updateUI();
+        showNotification(`Куплен товар: ${product.name}`);
+    } else {
+        showNotification('Недостаточно денег!', 'error');
+    }
+}
+
+// Продажа товара
+function sellProduct(productId) {
+    const product = gameState.inventory.find(item => item.id === productId);
+    if (!product || product.quantity <= 0) return;
+    
+    gameState.money += product.sellPrice;
+    product.quantity--;
+    gameState.reputation += 2;
+    
+    if (gameState.reputation >= 100) {
+        levelUp();
+    }
+    
+    saveGameState();
+    updateUI();
+    showNotification(`Продан товар: ${product.name}`);
+}
+
+// Повышение уровня
+function levelUp() {
+    gameState.level++;
+    gameState.reputation = 0;
+    gameState.stars += 5;
+    showNotification(`Поздравляем! Вы достигли уровня ${gameState.level}!`, 'success');
+}
+
+// Показ уведомлений
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 500);
+    }, 2000);
+}
+
 // Инициализация игры
 function initGame() {
     loadGameState();
+    initShop();
     updateUI();
     setupEventListeners();
     checkAttemptsReset();
@@ -189,12 +341,12 @@ function setupEventListeners() {
         });
     });
 
-    // Кнопки категорий
+    // Обработчики категорий
     document.querySelectorAll('.category-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            filterInventory(btn.dataset.category);
+            updateShopUI();
         });
     });
 

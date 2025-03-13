@@ -532,4 +532,193 @@ body {
     .stats > div {
         background-color: #2d2d2d;
     }
+}
+
+/* Товары */
+.product-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.product-icon {
+    width: 100%;
+    height: 100%;
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.product-info p {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin: 0.25rem 0;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.product-actions button {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.product-actions button:first-child {
+    background: #3498db;
+    color: white;
+}
+
+.product-actions button:last-child {
+    background: #2ecc71;
+    color: white;
+}
+
+.product-actions button:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+.product-actions button:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
+
+/* Уведомления */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+}
+
+.notification.info {
+    background: #3498db;
+    color: white;
+}
+
+.notification.success {
+    background: #2ecc71;
+    color: white;
+}
+
+.notification.error {
+    background: #e74c3c;
+    color: white;
+}
+
+.notification.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translate(-50%, 100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+}
+
+/* Адаптивный дизайн для товаров */
+@media (max-width: 768px) {
+    .shop-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .product-item {
+        padding: 0.5rem;
+    }
+
+    .product-info h3 {
+        font-size: 1rem;
+    }
+
+    .product-info p {
+        font-size: 0.8rem;
+    }
+
+    .product-actions {
+        flex-direction: column;
+    }
+
+    .notification {
+        width: 90%;
+        max-width: 300px;
+        font-size: 0.9rem;
+        padding: 0.8rem 1.5rem;
+    }
+}
+
+/* Темная тема для товаров */
+@media (prefers-color-scheme: dark) {
+    .product-item {
+        background: #2d2d2d;
+    }
+
+    .product-image {
+        background: #1a1a1a;
+    }
+
+    .product-info h3 {
+        color: #ecf0f1;
+    }
+
+    .product-info p {
+        color: #bdc3c7;
+    }
+
+    .notification {
+        background: #2d2d2d;
+        color: white;
+    }
 } 
