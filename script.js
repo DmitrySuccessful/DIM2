@@ -15,6 +15,15 @@ const gameState = {
         social: 0,
         bloggers: 0,
         targeted: 0
+    },
+    referral: {
+        points: 0,
+        count: 0,
+        earnings: 0,
+        link: '',
+        bonuses: {
+            sales: 0
+        }
     }
 };
 
@@ -58,6 +67,8 @@ function initGame() {
     updateUI();
     setupEventListeners();
     startGameLoop();
+    initReferralSystem();
+    initMinigame();
 }
 
 // Обновление интерфейса
@@ -188,7 +199,9 @@ function calculateSales() {
     gameState.inventory.forEach(item => {
         const baseChance = 0.3 + marketingBonus;
         if (Math.random() < baseChance) {
-            sales += item.basePrice * 1.5;
+            const saleAmount = item.basePrice * 1.5;
+            // Учитываем реферальный бонус
+            sales += saleAmount * (1 + gameState.referral.bonuses.sales);
         }
     });
 
@@ -210,6 +223,289 @@ function checkLevel() {
         alert(`Поздравляем! Вы достигли уровня ${newLevel}!`);
     }
 }
+
+// Инициализация реферальной системы
+function initReferralSystem() {
+    // Генерируем уникальную реферальную ссылку
+    const userId = tg.initDataUnsafe.user?.id || Math.random().toString(36).substr(2, 9);
+    gameState.referral.link = `https://t.me/your_bot?start=ref_${userId}`;
+    
+    // Проверяем, пришел ли пользователь по реферальной ссылке
+    const startParam = tg.initDataUnsafe.start_param;
+    if (startParam && startParam.startsWith('ref_')) {
+        const referrerId = startParam.split('_')[1];
+        handleReferral(referrerId);
+    }
+    
+    updateReferralUI();
+}
+
+// Обработка реферала
+function handleReferral(referrerId) {
+    // Здесь должна быть логика проверки и начисления наград
+    // В реальном приложении это должно быть на сервере
+    gameState.referral.count++;
+    gameState.referral.points += 100;
+    gameState.referral.earnings += 100;
+    
+    // Обновляем бонусы
+    if (gameState.referral.count >= 10) {
+        gameState.referral.bonuses.sales = 0.2;
+    } else if (gameState.referral.count >= 5) {
+        gameState.referral.bonuses.sales = 0.1;
+    }
+    
+    updateReferralUI();
+}
+
+// Обновление UI реферальной системы
+function updateReferralUI() {
+    document.getElementById('referral-link').value = gameState.referral.link;
+    document.getElementById('referral-count').textContent = gameState.referral.count;
+    document.getElementById('referral-earnings').textContent = gameState.referral.earnings;
+    document.getElementById('referral-points').textContent = gameState.referral.points;
+}
+
+// Копирование реферальной ссылки
+function copyReferralLink() {
+    const input = document.getElementById('referral-link');
+    input.select();
+    document.execCommand('copy');
+    alert('Ссылка скопирована!');
+}
+
+// Мини-игра
+const minigame = {
+    isActive: false,
+    score: 0,
+    timeLeft: 20,
+    items: [
+        { id: 'tshirt', name: 'Футболка', points: 10 },
+        { id: 'jeans', name: 'Джинсы', points: 20 },
+        { id: 'sneakers', name: 'Кроссовки', points: 30 },
+        { id: 'bag', name: 'Сумка', points: 15 }
+    ]
+};
+
+// Инициализация мини-игры
+function initMinigame() {
+    const startButton = document.getElementById('start-minigame');
+    startButton.addEventListener('click', startMinigame);
+}
+
+// Запуск мини-игры
+function startMinigame() {
+    if (minigame.isActive) return;
+    
+    minigame.isActive = true;
+    minigame.score = 0;
+    minigame.timeLeft = 20;
+    
+    updateMinigameUI();
+    startMinigameTimer();
+    startDroppingItems();
+}
+
+// Таймер мини-игры
+function startMinigameTimer() {
+    const timer = setInterval(() => {
+        if (!minigame.isActive) {
+            clearInterval(timer);
+            return;
+        }
+        
+        minigame.timeLeft--;
+        updateMinigameUI();
+        
+        if (minigame.timeLeft <= 0) {
+            endMinigame();
+        }
+    }, 1000);
+}
+
+// Обновляем функцию создания падающих предметов
+function startDroppingItems() {
+    const createItem = () => {
+        if (!minigame.isActive) return;
+        
+        const item = minigame.items[Math.floor(Math.random() * minigame.items.length)];
+        const itemElement = document.createElement('div');
+        itemElement.className = 'falling-item';
+        itemElement.style.left = Math.random() * (document.getElementById('minigame-area').offsetWidth - 60) + 'px';
+        
+        // Создаем SVG-иконку
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', `#${item.id}`);
+        svg.appendChild(use);
+        itemElement.appendChild(svg);
+        
+        itemElement.dataset.points = item.points;
+        itemElement.dataset.name = item.name;
+        
+        itemElement.addEventListener('click', () => catchItem(itemElement));
+        
+        document.getElementById('minigame-area').appendChild(itemElement);
+        itemElement.classList.add('falling');
+        
+        // Добавляем случайное вращение
+        itemElement.style.transform = `rotate(${Math.random() * 360}deg)`;
+        
+        setTimeout(() => {
+            if (itemElement.parentNode) {
+                itemElement.remove();
+            }
+        }, 2000);
+    };
+    
+    const dropInterval = setInterval(() => {
+        if (!minigame.isActive) {
+            clearInterval(dropInterval);
+            return;
+        }
+        createItem();
+    }, 1000);
+}
+
+// Обновляем функцию ловли предмета
+function catchItem(itemElement) {
+    if (!minigame.isActive) return;
+    
+    const points = parseInt(itemElement.dataset.points);
+    const name = itemElement.dataset.name;
+    
+    // Добавляем эффект пойманного предмета
+    itemElement.classList.add('caught');
+    
+    // Добавляем визуальный эффект очков
+    showPointsEffect(points, itemElement);
+    
+    minigame.score += points;
+    updateMinigameUI();
+    
+    // Удаляем предмет после анимации
+    setTimeout(() => {
+        if (itemElement.parentNode) {
+            itemElement.remove();
+        }
+    }, 300);
+}
+
+// Добавляем эффект очков
+function showPointsEffect(points, element) {
+    const pointsElement = document.createElement('div');
+    pointsElement.className = 'points-effect';
+    pointsElement.textContent = `+${points}`;
+    
+    const rect = element.getBoundingClientRect();
+    const gameArea = document.getElementById('minigame-area');
+    const gameRect = gameArea.getBoundingClientRect();
+    
+    pointsElement.style.left = `${rect.left - gameRect.left + rect.width / 2}px`;
+    pointsElement.style.top = `${rect.top - gameRect.top}px`;
+    
+    gameArea.appendChild(pointsElement);
+    
+    setTimeout(() => {
+        pointsElement.remove();
+    }, 1000);
+}
+
+// Обновление UI мини-игры
+function updateMinigameUI() {
+    document.getElementById('minigame-timer').textContent = minigame.timeLeft;
+    document.getElementById('minigame-score').textContent = minigame.score;
+}
+
+// Обновляем функцию завершения игры
+function endMinigame() {
+    minigame.isActive = false;
+    
+    // Добавляем анимацию завершения
+    const gameArea = document.getElementById('minigame-area');
+    gameArea.style.animation = 'fadeOut 0.5s ease';
+    
+    // Показываем результаты
+    setTimeout(() => {
+        const results = document.createElement('div');
+        results.className = 'game-results';
+        results.innerHTML = `
+            <h3>Игра окончена!</h3>
+            <p>Вы заработали ${minigame.score} очков!</p>
+            <button class="minigame-btn" onclick="startMinigame()">
+                <span class="btn-icon">🔄</span>
+                Играть снова
+            </button>
+        `;
+        
+        gameArea.innerHTML = '';
+        gameArea.appendChild(results);
+        gameArea.style.animation = 'fadeIn 0.5s ease';
+        
+        // Начисляем деньги
+        gameState.money += minigame.score;
+        updateUI();
+    }, 500);
+}
+
+// Добавляем стили для эффектов
+const style = document.createElement('style');
+style.textContent = `
+    .points-effect {
+        position: absolute;
+        color: #2ecc71;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        animation: floatUp 1s ease-out;
+        pointer-events: none;
+    }
+
+    @keyframes floatUp {
+        0% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+    }
+
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .game-results {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .game-results h3 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .game-results p {
+        color: #7f8c8d;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+`;
+document.head.appendChild(style);
 
 // Запуск игры
 window.onload = initGame; 

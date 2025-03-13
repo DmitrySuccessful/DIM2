@@ -138,6 +138,242 @@ body {
     background-color: #e9ecef;
 }
 
+/* Реферальная система */
+.referral-info {
+    padding: 1rem;
+}
+
+.referral-link {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.referral-link input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.referral-stats {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.referral-rewards ul {
+    list-style: none;
+    padding: 0;
+}
+
+.referral-rewards li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Мини-игра */
+.minigame-container {
+    padding: 1rem;
+    background: linear-gradient(135deg, #f6f8fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.minigame-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.minigame-header h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.minigame-description {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.minigame-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.minigame-timer, .minigame-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timer-icon, .score-icon {
+    font-size: 1.5rem;
+}
+
+.minigame-area {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+    border: 3px solid #90caf9;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.player-basket {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 60px;
+    background: #e74c3c;
+    border-radius: 0 0 50% 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.player-basket::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 10px;
+    background: #c0392b;
+    border-radius: 5px;
+}
+
+.minigame-controls {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.minigame-btn {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.minigame-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.minigame-btn:active {
+    transform: translateY(0);
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+}
+
+.minigame-tutorial {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.minigame-tutorial h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.minigame-tutorial ul {
+    list-style: none;
+    padding: 0;
+}
+
+.minigame-tutorial li {
+    padding: 0.5rem 0;
+    color: #7f8c8d;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.minigame-tutorial li::before {
+    content: '🎯';
+}
+
+/* Падающие предметы */
+.falling-item {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.falling-item svg {
+    width: 100%;
+    height: 100%;
+}
+
+.falling-item:hover {
+    transform: scale(1.1) rotate(5deg);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Анимации */
+@keyframes fall {
+    from {
+        transform: translateY(-60px) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    to {
+        transform: translateY(400px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.falling {
+    animation: fall 2s linear;
+}
+
+/* Эффект при ловле предмета */
+@keyframes catch {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+
+.caught {
+    animation: catch 0.3s ease-out;
+}
+
 /* Адаптивный дизайн */
 @media (max-width: 768px) {
     .game-container {
@@ -155,5 +391,30 @@ body {
 
     .tabs {
         flex-wrap: wrap;
+    }
+
+    .minigame-area {
+        height: 300px;
+    }
+    
+    .referral-link {
+        flex-direction: column;
+    }
+    
+    .referral-link button {
+        width: 100%;
+    }
+
+    .minigame-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .minigame-description {
+        font-size: 1rem;
+    }
+    
+    .minigame-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
     }
 } 
