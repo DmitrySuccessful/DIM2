@@ -73,19 +73,19 @@ function initShop() {
 // Обновление интерфейса магазина
 function updateShopUI() {
     const shopGrid = document.querySelector('.shop-grid');
+    if (!shopGrid) return;
+    
     shopGrid.innerHTML = '';
 
-    const activeCategory = document.querySelector('.category-btn.active')?.dataset.category || 'all';
+    const activeCategory = document.querySelector('.category-btn.active')?.dataset.category || 'clothes';
     
-    Object.entries(baseProducts).forEach(([category, products]) => {
-        if (activeCategory === 'all' || activeCategory === category) {
-            products.forEach(product => {
-                const inventoryItem = gameState.inventory.find(item => item.id === product.id);
-                const productElement = createProductElement(inventoryItem || product);
-                shopGrid.appendChild(productElement);
-            });
-        }
-    });
+    if (baseProducts[activeCategory]) {
+        baseProducts[activeCategory].forEach(product => {
+            const inventoryItem = gameState.inventory.find(item => item.id === product.id);
+            const productElement = createProductElement(inventoryItem || product);
+            shopGrid.appendChild(productElement);
+        });
+    }
 }
 
 // Создание элемента товара
@@ -217,12 +217,38 @@ function initGame() {
             
             // Показываем соответствующую вкладку
             const tabId = btn.getAttribute('data-tab');
-            document.querySelector(`#${tabId}-tab`).classList.add('active');
+            const tabPane = document.querySelector(`#${tabId}-tab`);
+            if (tabPane) {
+                tabPane.classList.add('active');
+            }
+        });
+    });
+    
+    // Добавляем обработчики для кнопок категорий
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Убираем активный класс у всех кнопок категорий
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            
+            // Добавляем активный класс нажатой кнопке
+            btn.classList.add('active');
+            
+            // Обновляем отображение товаров
+            updateShopUI();
         });
     });
     
     // Показываем первую вкладку по умолчанию
-    document.querySelector('.tab-btn').click();
+    const firstTab = document.querySelector('.tab-btn');
+    if (firstTab) {
+        firstTab.click();
+    }
+    
+    // Активируем первую категорию по умолчанию
+    const firstCategory = document.querySelector('.category-btn');
+    if (firstCategory) {
+        firstCategory.click();
+    }
 }
 
 // Загрузка состояния игры
