@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <!-- Футболка -->
+    <symbol id="tshirt" viewBox="0 0 100 100">
+        <path d="M50 10 L30 30 L40 40 L50 30 L60 40 L70 30 L50 10" fill="#3498db"/>
+        <path d="M30 30 L70 30 L80 90 L20 90 Z" fill="#2980b9"/>
+        <path d="M30 30 L20 90 M70 30 L80 90" stroke="#2980b9" stroke-width="2"/>
+    </symbol>
+
+    <!-- Джинсы -->
+    <symbol id="jeans" viewBox="0 0 100 100">
+        <path d="M30 20 L40 20 L40 80 L30 80 Z" fill="#2ecc71"/>
+        <path d="M60 20 L70 20 L70 80 L60 80 Z" fill="#2ecc71"/>
+        <path d="M30 20 L70 20 L70 30 L30 30 Z" fill="#27ae60"/>
+        <path d="M30 30 L40 30 L40 80 L30 80 Z" fill="#27ae60"/>
+        <path d="M60 30 L70 30 L70 80 L60 80 Z" fill="#27ae60"/>
+    </symbol>
+
+    <!-- Кроссовки -->
+    <symbol id="sneakers" viewBox="0 0 100 100">
+        <path d="M20 40 L80 40 L90 60 L80 80 L20 80 L10 60 Z" fill="#e74c3c"/>
+        <path d="M20 40 L80 40 L85 50 L80 60 L20 60 L15 50 Z" fill="#c0392b"/>
+        <path d="M30 60 L70 60 L75 70 L70 80 L30 80 L25 70 Z" fill="#c0392b"/>
+        <path d="M40 30 L60 30 L65 40 L60 50 L40 50 L35 40 Z" fill="#e74c3c"/>
+    </symbol>
+
+    <!-- Сумка -->
+    <symbol id="bag" viewBox="0 0 100 100">
+        <path d="M30 20 L70 20 L80 80 L20 80 Z" fill="#f1c40f"/>
+        <path d="M30 20 L40 20 L40 40 L30 40 Z" fill="#f39c12"/>
+        <path d="M60 20 L70 20 L70 40 L60 40 Z" fill="#f39c12"/>
+        <path d="M40 40 L60 40 L65 80 L35 80 Z" fill="#f39c12"/>
+        <path d="M45 20 L55 20 L55 40 L45 40 Z" fill="#f39c12"/>
+    </symbol>
+</svg> 
