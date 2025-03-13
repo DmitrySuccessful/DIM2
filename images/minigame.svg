@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+    <!-- Корзина (игрок) -->
+    <symbol id="basket" viewBox="0 0 100 100">
+        <path d="M10,80 L90,80 L80,40 L20,40 Z" fill="#8B4513" stroke="#3E2723" stroke-width="3"/>
+        <path d="M30,40 C30,20 70,20 70,40" fill="none" stroke="#3E2723" stroke-width="3"/>
+    </symbol>
+
+    <!-- Монета -->
+    <symbol id="coin" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" fill="#FFD700" stroke="#FFA000" stroke-width="3"/>
+        <text x="50" y="65" font-size="40" text-anchor="middle" fill="#FFA000">$</text>
+    </symbol>
+
+    <!-- Камень (препятствие) -->
+    <symbol id="rock" viewBox="0 0 100 100">
+        <path d="M30,70 Q40,80 50,70 Q60,85 70,70 Q80,75 80,60 Q85,50 80,40 Q75,30 65,35 Q55,25 45,35 Q35,30 30,40 Q20,50 30,70" 
+              fill="#808080" stroke="#4A4A4A" stroke-width="3"/>
+    </symbol>
+
+    <!-- Бонус (звезда) -->
+    <symbol id="star" viewBox="0 0 100 100">
+        <path d="M50,10 L61,40 L93,40 L67,60 L77,90 L50,72 L23,90 L33,60 L7,40 L39,40 Z" 
+              fill="#FFD700" stroke="#FFA000" stroke-width="2"/>
+    </symbol>
+</svg> 

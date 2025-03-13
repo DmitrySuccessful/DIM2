@@ -78,10 +78,20 @@
             <section id="minigame-section" class="section">
                 <h2>Ловец Товаров</h2>
                 <div class="minigame-container">
+                    <div class="minigame-instructions">
+                        <p>Используйте стрелки влево/вправо или касайтесь экрана для управления корзиной.</p>
+                        <p>Ловите падающие товары, чтобы заработать деньги!</p>
+                        <ul>
+                            <li>🥉 Бронзовые товары: +10 монет</li>
+                            <li>🥈 Серебряные товары: +25 монет</li>
+                            <li>🥇 Золотые товары: +50 монет</li>
+                        </ul>
+                    </div>
                     <canvas id="minigame-canvas"></canvas>
                     <div class="minigame-controls">
-                        <button id="start-game" class="secondary-btn">Начать игру</button>
                         <div class="score">Счёт: <span id="game-score">0</span></div>
+                        <button id="start-game" class="primary-btn">Начать игру</button>
+                        <div class="time">Время: <span id="game-time">60</span>с</div>
                     </div>
                 </div>
             </section>

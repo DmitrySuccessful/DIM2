@@ -28,9 +28,6 @@ export class Game {
             // Инициализация UI
             this.ui = new UI(this.gameState, this.services);
 
-            // Инициализация мини-игры
-            this.initializeMinigame();
-
             // Запуск игрового цикла
             this.startGameLoop();
 
@@ -39,9 +36,32 @@ export class Game {
 
             // Обработчики событий
             this.setupEventListeners();
+
+            // Инициализация мини-игры после загрузки DOM
+            window.addEventListener('load', () => {
+                this.initializeMinigame();
+            });
         } catch (error) {
             console.error('Failed to initialize game:', error);
+            this.handleError(error);
             throw error;
+        }
+    }
+
+    /**
+     * Обработка ошибок
+     * @private
+     */
+    handleError(error) {
+        console.error('Game error:', error);
+        if (this.ui) {
+            this.ui.showError('Произошла ошибка в игре: ' + error.message);
+        } else {
+            const errorElement = document.getElementById('error-message');
+            if (errorElement) {
+                errorElement.style.display = 'block';
+                errorElement.querySelector('p').textContent = 'Произошла ошибка при инициализации игры: ' + error.message;
+            }
         }
     }
 
@@ -50,13 +70,18 @@ export class Game {
      * @private
      */
     initializeServices() {
-        this.services = {
-            productService: new ProductService(),
-            staffService: new StaffService(),
-            marketingService: new MarketingService(),
-            saveService: new SaveService(this.gameState),
-            referralService: new ReferralService(this.gameState)
-        };
+        try {
+            this.services = {
+                productService: new ProductService(),
+                staffService: new StaffService(),
+                marketingService: new MarketingService(),
+                saveService: new SaveService(this.gameState),
+                referralService: new ReferralService(this.gameState)
+            };
+        } catch (error) {
+            console.error('Failed to initialize services:', error);
+            throw error;
+        }
     }
 
     /**
@@ -88,14 +113,31 @@ export class Game {
                 throw new Error('Minigame canvas not found');
             }
             
-            canvas.width = CONFIG.MINIGAME.canvasWidth;
-            canvas.height = CONFIG.MINIGAME.canvasHeight;
-            
+            // Настройка canvas
+            const container = canvas.parentElement;
+            if (!container) {
+                throw new Error('Canvas container not found');
+            }
+
+            // Получаем контекст
             const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                throw new Error('Failed to get canvas context');
+            }
+
+            // Создаем экземпляр мини-игры
             this.minigame = new Minigame(canvas, ctx, this.gameState);
+
+            // Добавляем обработчик для кнопки старта
+            const startButton = document.getElementById('start-game');
+            if (startButton) {
+                startButton.addEventListener('click', () => this.startMinigame());
+            }
+
+            console.log('Minigame initialized successfully');
         } catch (error) {
             console.error('Failed to initialize minigame:', error);
-            // Продолжаем без мини-игры
+            this.handleError(error);
         }
     }
 
@@ -104,23 +146,34 @@ export class Game {
      * @private
      */
     setupEventListeners() {
-        // Сохранение перед закрытием страницы
-        window.addEventListener('beforeunload', () => {
-            this.services.saveService.save();
-        });
-
-        // Сохранение при переключении вкладки
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
+        try {
+            // Сохранение перед закрытием страницы
+            window.addEventListener('beforeunload', () => {
                 this.services.saveService.save();
-            }
-        });
+            });
 
-        // Обработка ошибок
-        window.addEventListener('error', (event) => {
-            console.error('Game error:', event.error);
-            this.ui.showError('Произошла ошибка в игре');
-        });
+            // Сохранение при переключении вкладки
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    this.services.saveService.save();
+                }
+            });
+
+            // Обработка ошибок
+            window.addEventListener('error', (event) => {
+                console.error('Game error:', event.error);
+                this.handleError(event.error);
+            });
+
+            // Обработка необработанных промисов
+            window.addEventListener('unhandledrejection', (event) => {
+                console.error('Unhandled promise rejection:', event.reason);
+                this.handleError(event.reason);
+            });
+        } catch (error) {
+            console.error('Failed to setup event listeners:', error);
+            this.handleError(error);
+        }
     }
 
     /**

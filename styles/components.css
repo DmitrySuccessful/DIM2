@@ -16,6 +16,11 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --modal-overlay: rgba(0, 0, 0, 0.5);
     --transition-time: 0.3s;
+    --surface-color: #f9f9f9;
+    --surface-color-light: #e0e0e0;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --disabled-color: #ccc;
 }
 
 /* Компоненты магазина */
@@ -209,43 +214,122 @@
 
 /* Компоненты мини-игры */
 .minigame-container {
-    background: var(--background-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #minigame-canvas {
-    border: 2px solid var(--border-color);
-    border-radius: 4px;
-    margin: 1rem 0;
+    width: 100%;
+    height: 400px;
+    background: var(--background-color);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    cursor: pointer;
 }
 
 .minigame-controls {
     display: flex;
-    gap: 20px;
+    justify-content: space-between;
     align-items: center;
-}
-
-#start-game {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.2s;
-}
-
-#start-game:hover {
-    background: #388E3C;
+    padding: 15px;
+    background: var(--surface-color-light);
+    border-radius: var(--border-radius);
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .score {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: var(--text-color);
+    padding: 10px 20px;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.time {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: var(--text-color);
+    padding: 10px 20px;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+#start-game {
+    padding: 12px 24px;
     font-size: 1.2em;
     font-weight: bold;
+    color: white;
+    background: var(--primary-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-time), transform var(--transition-time);
+}
+
+#start-game:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+#start-game:disabled {
+    background: var(--disabled-color);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.minigame-instructions {
+    width: 100%;
+    padding: 20px;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    margin-top: 20px;
+    box-shadow: var(--box-shadow);
+}
+
+.minigame-instructions h3 {
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.minigame-instructions p {
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.minigame-instructions ul {
+    list-style: none;
+    padding-left: 20px;
+}
+
+.minigame-instructions li {
+    color: var(--text-light);
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 25px;
+}
+
+.minigame-instructions li::before {
+    content: "•";
+    color: var(--primary-color);
+    font-size: 1.5em;
+    position: absolute;
+    left: 0;
+    top: -3px;
 }
 
 /* Справка */
@@ -303,9 +387,26 @@
         height: 80px;
     }
 
+    .minigame-container {
+        padding: 10px;
+    }
+
     #minigame-canvas {
+        height: 300px;
+    }
+
+    .minigame-controls {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .score, .time {
         width: 100%;
-        height: auto;
+    }
+
+    #start-game {
+        width: 100%;
     }
 
     .modal {
@@ -427,5 +528,16 @@
     to {
         opacity: 1;
         transform: translateX(0);
+    }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+    .minigame-instructions {
+        background: var(--surface-color);
+    }
+
+    .minigame-instructions li::before {
+        color: var(--primary-light);
     }
 } 

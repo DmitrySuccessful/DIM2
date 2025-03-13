@@ -1,498 +1,203 @@
-import { GAME_CONFIG } from './gameConfig.js';
-
-// Класс для управления мини-игрой
-export class Minigame {
-    constructor(canvas, ctx, gameState) {
-        if (!canvas || !ctx || !gameState) {
-            throw new Error('Missing required parameters for Minigame initialization');
-        }
-
-        this.canvas = canvas;
-        this.ctx = ctx;
-        this.gameState = gameState;
-        this.isRunning = false;
+class MinigameManager {
+    constructor() {
+        this.canvas = document.getElementById('minigame-canvas');
+        this.ctx = this.canvas.getContext('2d');
         this.score = 0;
-        this.combo = 0;
-        this.comboTimer = null;
-        this.timeLeft = 60;
-        this.currentBackground = 0;
-        this.powerUps = new Set();
-        this.particles = [];
+        this.timeLeft = 60; // 60 секунд на игру
+        this.gameRunning = false;
+        this.objects = [];
+        this.playerX = this.canvas.width / 2;
+        this.playerY = this.canvas.height - 50;
+        this.playerWidth = 80;
+        this.playerHeight = 60;
+        this.spawnInterval = 1000; // Интервал появления объектов (1 секунда)
+        this.lastSpawn = 0;
         
-        // Load assets
-        this.loadAssets();
+        // Загрузка изображений
+        this.images = {
+            basket: new Image(),
+            coin: new Image(),
+            rock: new Image(),
+            star: new Image()
+        };
+
+        // Загружаем SVG изображения
+        this.loadImages();
         
-        // Setup game elements
-        this.setupGame();
-        
-        // Initialize event listeners
-        this.setupControls();
+        // Слушатели событий
+        this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+        this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this));
     }
 
-    loadAssets() {
-        try {
-            // Создаем базовые ассеты
-            this.assets = {
-                backgrounds: [],
-                items: {},
-                cart: new Image()
-            };
+    loadImages() {
+        const svgToDataURL = (svgElement, width, height) => {
+            const svgString = new XMLSerializer().serializeToString(svgElement);
+            const blob = new Blob([svgString], {type: 'image/svg+xml'});
+            return URL.createObjectURL(blob);
+        };
 
-            // Загружаем фоны
-            GAME_CONFIG.minigame.backgrounds.forEach((src, index) => {
-                const img = new Image();
-                img.onerror = () => {
-                    console.warn(`Не удалось загрузить фон ${src}`);
-                };
-                img.src = `assets/backgrounds/${src}`;
-                this.assets.backgrounds[index] = img;
+        // Загружаем SVG файл
+        fetch('images/minigame.svg')
+            .then(response => response.text())
+            .then(svgText => {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+
+                // Конвертируем каждый символ в Data URL
+                this.images.basket.src = svgToDataURL(svgDoc.getElementById('basket'), 100, 100);
+                this.images.coin.src = svgToDataURL(svgDoc.getElementById('coin'), 100, 100);
+                this.images.rock.src = svgToDataURL(svgDoc.getElementById('rock'), 100, 100);
+                this.images.star.src = svgToDataURL(svgDoc.getElementById('star'), 100, 100);
             });
-
-            // Загружаем спрайты предметов
-            Object.entries(GAME_CONFIG.minigame.itemTypes).forEach(([key, value]) => {
-                const img = new Image();
-                img.onerror = () => {
-                    console.warn(`Не удалось загрузить спрайт ${value.sprite}`);
-                };
-                img.src = `assets/items/${value.sprite}`;
-                this.assets.items[key] = img;
-            });
-
-            // Загружаем спрайт корзины
-            this.assets.cart.onerror = () => {
-                console.warn('Не удалось загрузить спрайт корзины');
-            };
-            this.assets.cart.src = 'assets/cart.png';
-
-        } catch (error) {
-            console.error('Ошибка при загрузке ассетов:', error);
-            // Продолжаем работу с цветными прямоугольниками
-        }
     }
 
-    setupGame() {
-        // Canvas setup
-        this.resizeCanvas();
-        window.addEventListener('resize', () => this.resizeCanvas());
-
-        // Player setup
-        this.player = {
-            x: this.canvas.width / 2,
-            y: this.canvas.height - 80,
-            width: 80,
-            height: 60,
-            speed: 8,
-            targetX: null,
-            velocity: 0,
-            acceleration: 0.5,
-            maxSpeed: 12,
-            friction: 0.92
-        };
-
-        // Game elements
-        this.items = [];
-        this.powerUps = new Set();
-        this.particles = [];
-        this.combo = 0;
-        this.comboMultiplier = 1;
-    }
-
-    resizeCanvas() {
-        const container = this.canvas.parentElement;
-        if (!container) return;
-
-        const maxWidth = Math.min(container.clientWidth, 800);
-        this.canvas.width = maxWidth;
-        this.canvas.height = maxWidth * 0.75;
-
-        // Adjust player position after resize
-        if (this.player) {
-            this.player.y = this.canvas.height - 80;
-        }
-    }
-
-    setupControls() {
-        // Keyboard controls
-        window.addEventListener('keydown', (e) => {
-            if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                e.preventDefault();
-                this.handleInput(e.key === 'ArrowLeft' ? 'left' : 'right');
-            }
-        });
-
-        // Touch controls
-        let touchStartX = null;
+    handleMouseMove(e) {
+        if (!this.gameRunning) return;
         
-        this.canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            const rect = this.canvas.getBoundingClientRect();
-            this.player.targetX = touch.clientX - rect.left - this.player.width / 2;
-        });
-
-        this.canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const rect = this.canvas.getBoundingClientRect();
-            this.player.targetX = touch.clientX - rect.left - this.player.width / 2;
-        });
-
-        this.canvas.addEventListener('touchend', () => {
-            touchStartX = null;
-            this.player.targetX = null;
-        });
+        const rect = this.canvas.getBoundingClientRect();
+        this.playerX = e.clientX - rect.left - this.playerWidth / 2;
+        
+        // Ограничиваем движение игрока границами canvas
+        this.playerX = Math.max(0, Math.min(this.canvas.width - this.playerWidth, this.playerX));
     }
 
-    handleInput(direction) {
-        const acceleration = direction === 'left' ? -this.player.acceleration : this.player.acceleration;
-        this.player.velocity = Math.max(
-            -this.player.maxSpeed,
-            Math.min(this.player.maxSpeed, this.player.velocity + acceleration)
-        );
+    handleTouchMove(e) {
+        if (!this.gameRunning) return;
+        e.preventDefault();
+        
+        const rect = this.canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        this.playerX = touch.clientX - rect.left - this.playerWidth / 2;
+        
+        // Ограничиваем движение игрока границами canvas
+        this.playerX = Math.max(0, Math.min(this.canvas.width - this.playerWidth, this.playerX));
     }
 
-    spawnItem() {
-        const rand = Math.random();
-        let type = null;
-        let cumProb = 0;
-
-        // Select item type based on probability
-        for (const [itemType, config] of Object.entries(GAME_CONFIG.minigame.itemTypes)) {
-            cumProb += config.probability;
-            if (rand <= cumProb) {
-                type = itemType;
-                break;
-            }
-        }
-
-        if (!type) return;
-
-        const config = GAME_CONFIG.minigame.itemTypes[type];
-        const item = {
-            x: Math.random() * (this.canvas.width - 40),
-            y: -40,
-            width: 40,
-            height: 40,
-            type,
-            value: config.value,
-            rotation: 0,
-            rotationSpeed: (Math.random() - 0.5) * 0.1
-        };
-
-        this.items.push(item);
-    }
-
-    spawnPowerUp() {
-        if (Math.random() > 0.05) return; // 5% chance to spawn power-up
-
-        const powerUpTypes = Object.keys(GAME_CONFIG.minigame.powerUps);
-        const type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-        const config = GAME_CONFIG.minigame.powerUps[type];
-
-        const powerUp = {
-            x: Math.random() * (this.canvas.width - 30),
-            y: -30,
-            width: 30,
-            height: 30,
-            type,
-            duration: config.duration
-        };
-
-        this.items.push(powerUp);
-    }
-
-    activatePowerUp(type) {
-        const config = GAME_CONFIG.minigame.powerUps[type];
-        this.powerUps.add(type);
-
-        setTimeout(() => {
-            this.powerUps.delete(type);
-        }, config.duration);
-    }
-
-    updateCombo() {
-        this.combo++;
-        this.comboMultiplier = Math.min(
-            GAME_CONFIG.minigame.comboSystem.maxMultiplier,
-            1 + (this.combo * GAME_CONFIG.minigame.comboSystem.baseMultiplier)
-        );
-
-        // Reset combo timer
-        if (this.comboTimer) clearTimeout(this.comboTimer);
-        this.comboTimer = setTimeout(() => {
-            this.combo = 0;
-            this.comboMultiplier = 1;
-        }, GAME_CONFIG.minigame.comboSystem.comboTimeout);
-    }
-
-    createParticles(x, y, color, value) {
-        for (let i = 0; i < 8; i++) {
-            const angle = (Math.PI * 2 * i) / 8;
-            const speed = 2 + Math.random() * 2;
+    spawnObject() {
+        const now = Date.now();
+        if (now - this.lastSpawn >= this.spawnInterval) {
+            const type = Math.random() < 0.7 ? 'coin' : Math.random() < 0.8 ? 'rock' : 'star';
+            const size = type === 'star' ? 40 : 30;
             
-            this.particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                alpha: 1,
-                color,
-                size: 4,
-                value: value
+            this.objects.push({
+                x: Math.random() * (this.canvas.width - size),
+                y: -size,
+                width: size,
+                height: size,
+                speed: 2 + Math.random() * 2,
+                type: type
             });
+            
+            this.lastSpawn = now;
         }
     }
 
-    update() {
-        if (!this.isRunning) return;
+    updateObjects() {
+        for (let i = this.objects.length - 1; i >= 0; i--) {
+            const obj = this.objects[i];
+            obj.y += obj.speed;
 
-        // Update player movement
-        if (this.player.targetX !== null) {
-            const dx = this.player.targetX - this.player.x;
-            this.player.velocity = Math.sign(dx) * Math.min(Math.abs(dx) * 0.2, this.player.maxSpeed);
-        }
-
-        this.player.velocity *= this.player.friction;
-        this.player.x = Math.max(0, Math.min(
-            this.canvas.width - this.player.width,
-            this.player.x + this.player.velocity
-        ));
-
-        // Update items
-        this.items.forEach((item, index) => {
-            const baseSpeed = 4;
-            const speedMultiplier = this.powerUps.has('SLOW_TIME') ? 0.5 : 1;
-            
-            item.y += baseSpeed * speedMultiplier;
-            item.rotation += item.rotationSpeed;
-
-            // Check for magnet power-up
-            if (this.powerUps.has('MAGNET')) {
-                const dx = this.player.x + this.player.width/2 - (item.x + item.width/2);
-                const dy = this.player.y + this.player.height/2 - (item.y + item.height/2);
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if (dist < GAME_CONFIG.minigame.powerUps.MAGNET.radius) {
-                    item.x += dx * 0.1;
-                    item.y += dy * 0.1;
+            // Проверяем столкновение с игроком
+            if (this.checkCollision(obj)) {
+                if (obj.type === 'coin') {
+                    this.score += 10;
+                } else if (obj.type === 'star') {
+                    this.score += 50;
+                } else if (obj.type === 'rock') {
+                    this.score = Math.max(0, this.score - 20);
                 }
+                this.objects.splice(i, 1);
+                continue;
             }
 
-            // Collision detection
-            if (this.checkCollision(this.player, item)) {
-                if (item.type === 'BROKEN_ITEM') {
-                    this.score = Math.max(0, this.score + GAME_CONFIG.minigame.obstacles.BROKEN_ITEM.penalty);
-                    this.combo = 0;
-                    this.comboMultiplier = 1;
-                } else if (Object.keys(GAME_CONFIG.minigame.powerUps).includes(item.type)) {
-                    this.activatePowerUp(item.type);
-                } else {
-                    const baseValue = item.value;
-                    const multiplier = this.powerUps.has('MULTIPLIER') ? 
-                        GAME_CONFIG.minigame.powerUps.MULTIPLIER.factor : 1;
-                    const finalValue = Math.round(baseValue * this.comboMultiplier * multiplier);
-                    
-                    this.score += finalValue;
-                    this.updateCombo();
-                    this.createParticles(item.x + item.width/2, item.y, this.getItemColor(item.type), finalValue);
+            // Удаляем объекты, вышедшие за пределы canvas
+            if (obj.y > this.canvas.height) {
+                if (obj.type === 'coin') {
+                    this.score = Math.max(0, this.score - 5);
                 }
-                this.items.splice(index, 1);
+                this.objects.splice(i, 1);
             }
+        }
+    }
 
-            // Remove items that are off screen
-            if (item.y > this.canvas.height) {
-                this.items.splice(index, 1);
-                this.combo = 0;
-                this.comboMultiplier = 1;
-            }
-        });
-
-        // Update particles
-        this.particles.forEach((particle, index) => {
-            particle.x += particle.vx;
-            particle.y += particle.vy;
-            particle.vy += 0.1; // gravity
-            particle.alpha -= 0.02;
-            
-            if (particle.alpha <= 0) {
-                this.particles.splice(index, 1);
-            }
-        });
-
-        // Spawn new items
-        if (Math.random() < 0.03) this.spawnItem();
-        if (Math.random() < 0.01) this.spawnPowerUp();
-
-        // Update time
-        this.timeLeft = Math.max(0, this.timeLeft - 1/60);
-        if (this.timeLeft === 0) this.endGame();
+    checkCollision(obj) {
+        return (
+            obj.x < this.playerX + this.playerWidth &&
+            obj.x + obj.width > this.playerX &&
+            obj.y < this.playerY + this.playerHeight &&
+            obj.y + obj.height > this.playerY
+        );
     }
 
     draw() {
+        // Очищаем canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Draw background
-        const bg = this.assets.backgrounds[this.currentBackground];
-        if (bg && bg.complete && bg.naturalHeight !== 0) {
-            this.ctx.drawImage(bg, 0, 0, this.canvas.width, this.canvas.height);
-        } else {
-            // Фолбэк на градиентный фон
-            const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-            gradient.addColorStop(0, '#87CEEB');
-            gradient.addColorStop(1, '#E0F7FA');
-            this.ctx.fillStyle = gradient;
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        }
+        // Рисуем игрока (корзину)
+        this.ctx.drawImage(this.images.basket, this.playerX, this.playerY, this.playerWidth, this.playerHeight);
 
-        // Draw items
-        this.items.forEach(item => {
-            this.ctx.save();
-            this.ctx.translate(item.x + item.width/2, item.y + item.height/2);
-            this.ctx.rotate(item.rotation);
-            
-            const sprite = this.assets.items[item.type];
-            if (sprite && sprite.complete && sprite.naturalHeight !== 0) {
-                this.ctx.drawImage(sprite, -item.width/2, -item.height/2, item.width, item.height);
-            } else {
-                // Фолбэк на цветные прямоугольники
-                this.ctx.fillStyle = this.getItemColor(item.type);
-                this.ctx.fillRect(-item.width/2, -item.height/2, item.width, item.height);
-            }
-            
-            this.ctx.restore();
+        // Рисуем падающие объекты
+        this.objects.forEach(obj => {
+            const image = this.images[obj.type];
+            this.ctx.drawImage(image, obj.x, obj.y, obj.width, obj.height);
         });
 
-        // Draw player cart
-        this.ctx.save();
-        const cartTilt = -this.player.velocity * 0.05;
-        this.ctx.translate(this.player.x + this.player.width/2, this.player.y + this.player.height/2);
-        this.ctx.rotate(cartTilt);
-        
-        if (this.assets.cart.complete && this.assets.cart.naturalHeight !== 0) {
-            this.ctx.drawImage(
-                this.assets.cart,
-                -this.player.width/2,
-                -this.player.height/2,
-                this.player.width,
-                this.player.height
-            );
-        } else {
-            // Фолбэк на цветной прямоугольник для корзины
-            this.ctx.fillStyle = '#4CAF50';
-            this.ctx.fillRect(-this.player.width/2, -this.player.height/2, this.player.width, this.player.height);
-        }
-        this.ctx.restore();
-
-        // Draw particles
-        this.particles.forEach(particle => {
-            this.ctx.save();
-            this.ctx.fillStyle = particle.color;
-            this.ctx.globalAlpha = particle.alpha;
-            this.ctx.beginPath();
-            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            this.ctx.fill();
-            
-            // Draw score value
-            if (particle.value) {
-                this.ctx.fillStyle = '#FFF';
-                this.ctx.font = '16px Arial';
-                this.ctx.fillText(`+${particle.value}`, particle.x, particle.y);
-            }
-            
-            this.ctx.restore();
-        });
-
-        // Draw UI
-        this.drawUI();
+        // Обновляем отображение счета и времени
+        document.querySelector('.score').textContent = `Счёт: ${this.score}`;
+        document.querySelector('.time').textContent = `Время: ${this.timeLeft}с`;
     }
 
-    drawUI() {
-        // Score and time
-        this.ctx.fillStyle = '#000';
-        this.ctx.font = 'bold 24px Arial';
-        this.ctx.fillText(`Счет: ${this.score}`, 10, 30);
-        this.ctx.fillText(`Время: ${Math.ceil(this.timeLeft)}с`, 10, 60);
+    startGame() {
+        if (this.gameRunning) return;
 
-        // Combo counter
-        if (this.combo > 1) {
-            this.ctx.fillStyle = '#FF5722';
-            this.ctx.font = 'bold 20px Arial';
-            this.ctx.fillText(`Комбо: x${this.combo} (${this.comboMultiplier.toFixed(1)})`, 10, 90);
-        }
-
-        // Active power-ups
-        let powerUpY = 120;
-        this.powerUps.forEach(type => {
-            this.ctx.fillStyle = '#2196F3';
-            this.ctx.font = '18px Arial';
-            this.ctx.fillText(`🌟 ${type}`, 10, powerUpY);
-            powerUpY += 25;
-        });
-    }
-
-    getItemColor(type) {
-        const colors = {
-            BRONZE: '#CD7F32',
-            SILVER: '#C0C0C0',
-            GOLD: '#FFD700',
-            RARE: '#FF5722',
-            BROKEN_ITEM: '#F44336',
-            MAGNET: '#2196F3',
-            SLOW_TIME: '#9C27B0',
-            MULTIPLIER: '#4CAF50'
-        };
-        return colors[type] || '#000';
-    }
-
-    checkCollision(rect1, rect2) {
-        return rect1.x < rect2.x + rect2.width &&
-               rect1.x + rect1.width > rect2.x &&
-               rect1.y < rect2.y + rect2.height &&
-               rect1.y + rect1.height > rect2.y;
-    }
-
-    start() {
-        if (this.isRunning) return;
-        
-        this.isRunning = true;
+        this.gameRunning = true;
         this.score = 0;
-        this.combo = 0;
-        this.comboMultiplier = 1;
         this.timeLeft = 60;
-        this.items = [];
-        this.particles = [];
-        this.powerUps.clear();
-        
-        // Start game loop
+        this.objects = [];
+        document.getElementById('start-game').disabled = true;
+
+        // Основной игровой цикл
         const gameLoop = () => {
-            if (!this.isRunning) return;
-            
-            this.update();
+            if (!this.gameRunning) return;
+
+            this.spawnObject();
+            this.updateObjects();
             this.draw();
             requestAnimationFrame(gameLoop);
         };
-        
+
+        // Таймер
+        const timer = setInterval(() => {
+            this.timeLeft--;
+            if (this.timeLeft <= 0) {
+                this.endGame();
+                clearInterval(timer);
+            }
+        }, 1000);
+
         gameLoop();
     }
 
-    stop() {
-        this.isRunning = false;
-        this.clearCanvas();
-        if (this.comboTimer) {
-            clearTimeout(this.comboTimer);
-        }
-    }
-
     endGame() {
-        this.isRunning = false;
-        this.gameState.addMoney(this.score);
-        this.gameState.addExperience(Math.floor(this.score / 10));
-        return this.score;
+        this.gameRunning = false;
+        document.getElementById('start-game').disabled = false;
+        
+        // Сохраняем результат
+        if (this.score > 0) {
+            const gameStats = {
+                score: this.score,
+                date: new Date().toISOString()
+            };
+            
+            const stats = JSON.parse(localStorage.getItem('minigameStats') || '[]');
+            stats.push(gameStats);
+            localStorage.setItem('minigameStats', JSON.stringify(stats));
+        }
     }
 }
 
-// Экспортируем класс Minigame
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Minigame;
-} 
+// Инициализация игры при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    const game = new MinigameManager();
+    document.getElementById('start-game').addEventListener('click', () => game.startGame());
+}); 
