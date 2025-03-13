@@ -16,6 +16,35 @@ const gameState = {
     employees: [],
     referralCode: generateReferralCode(),
     referrals: [],
+    // Система развития магазина
+    shop: {
+        level: 1,
+        size: 1, // 1 - маленький, 2 - средний, 3 - большой
+        upgrades: {
+            storage: 1, // Увеличивает количество товаров
+            display: 1, // Увеличивает привлекательность
+            automation: 1 // Увеличивает скорость продаж
+        }
+    },
+    // Система персонала
+    staff: {
+        cashiers: [], // Кассиры
+        managers: [], // Менеджеры
+        warehouse: [], // Складские работники
+        lastSalaryPayment: new Date().toDateString(),
+        autoSellEnabled: false
+    },
+    // Система подработки
+    work: {
+        tasks: [
+            { id: 'inventory', name: 'Учет товаров', reward: 50, time: 30 },
+            { id: 'pricing', name: 'Установка цен', reward: 75, time: 45 },
+            { id: 'display', name: 'Выкладка товаров', reward: 100, time: 60 },
+            { id: 'analysis', name: 'Анализ продаж', reward: 150, time: 90 }
+        ],
+        activeTask: null,
+        lastTaskTime: null
+    },
     minigame: {
         isActive: false,
         score: 0,
@@ -625,5 +654,264 @@ function buyAttempt() {
     alert('Вы купили дополнительную попытку!');
 }
 
+// Система автоматических продаж
+function updateAutoSales() {
+    if (!gameState.staff.autoSellEnabled) return;
+    
+    const totalStaff = gameState.staff.cashiers.length + 
+                      gameState.staff.managers.length + 
+                      gameState.staff.warehouse.length;
+    
+    if (totalStaff === 0) return;
+    
+    // Базовый шанс продажи
+    let saleChance = 0.1 + (totalStaff * 0.05);
+    
+    // Учитываем уровень магазина и улучшения
+    saleChance *= (1 + (gameState.shop.level - 1) * 0.2);
+    saleChance *= (1 + (gameState.shop.upgrades.automation - 1) * 0.1);
+    
+    // Проверяем каждый товар
+    gameState.inventory.forEach(product => {
+        if (product.quantity > 0 && Math.random() < saleChance) {
+            // Продаем товар
+            gameState.money += product.sellPrice;
+            product.quantity--;
+            gameState.reputation += 1;
+            
+            // Обновляем статистику
+            updateUI();
+        }
+    });
+}
+
+// Система зарплаты персонала
+function payStaffSalaries() {
+    const today = new Date().toDateString();
+    if (gameState.staff.lastSalaryPayment === today) return;
+    
+    let totalSalary = 0;
+    
+    // Зарплата кассиров
+    gameState.staff.cashiers.forEach(cashier => {
+        totalSalary += 100 * cashier.level;
+    });
+    
+    // Зарплата менеджеров
+    gameState.staff.managers.forEach(manager => {
+        totalSalary += 200 * manager.level;
+    });
+    
+    // Зарплата складских работников
+    gameState.staff.warehouse.forEach(worker => {
+        totalSalary += 150 * worker.level;
+    });
+    
+    // Проверяем, достаточно ли денег
+    if (gameState.money >= totalSalary) {
+        gameState.money -= totalSalary;
+        gameState.staff.lastSalaryPayment = today;
+        updateUI();
+        showNotification(`Выплачена зарплата персоналу: ${totalSalary} 💰`);
+    } else {
+        showNotification('Недостаточно денег для выплаты зарплаты!', 'error');
+    }
+}
+
+// Обновление игры
+function updateGame() {
+    updateAutoSales();
+    payStaffSalaries();
+}
+
+// Запуск обновления игры каждую минуту
+setInterval(updateGame, 60000);
+
 // Инициализация игры при загрузке страницы
-document.addEventListener('DOMContentLoaded', initGame); 
+document.addEventListener('DOMContentLoaded', initGame);
+
+// Управление персоналом
+function hireStaff(type) {
+    const costs = {
+        cashier: 500,
+        manager: 1000,
+        warehouse: 800
+    };
+    
+    if (gameState.money >= costs[type]) {
+        gameState.money -= costs[type];
+        
+        const newStaff = {
+            id: Date.now(),
+            type: type,
+            level: 1,
+            experience: 0,
+            salary: costs[type] / 5
+        };
+        
+        switch(type) {
+            case 'cashier':
+                gameState.staff.cashiers.push(newStaff);
+                break;
+            case 'manager':
+                gameState.staff.managers.push(newStaff);
+                break;
+            case 'warehouse':
+                gameState.staff.warehouse.push(newStaff);
+                break;
+        }
+        
+        updateUI();
+        showNotification(`Нанят новый ${getStaffName(type)}!`);
+    } else {
+        showNotification('Недостаточно денег!', 'error');
+    }
+}
+
+function getStaffName(type) {
+    const names = {
+        cashier: 'кассир',
+        manager: 'менеджер',
+        warehouse: 'складской работник'
+    };
+    return names[type] || type;
+}
+
+function toggleAutoSell() {
+    gameState.staff.autoSellEnabled = !gameState.staff.autoSellEnabled;
+    const btn = document.querySelector('.staff-btn:last-child');
+    btn.textContent = gameState.staff.autoSellEnabled ? 'Выключить автопродажи' : 'Включить автопродажи';
+    showNotification(gameState.staff.autoSellEnabled ? 'Автопродажи включены!' : 'Автопродажи выключены');
+}
+
+// Система работы
+let workTimer;
+let currentTask = null;
+
+function startTask(taskId) {
+    if (currentTask) {
+        showNotification('У вас уже есть активное задание!', 'error');
+        return;
+    }
+    
+    const task = gameState.work.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    currentTask = task;
+    gameState.work.activeTask = task;
+    gameState.work.lastTaskTime = Date.now();
+    
+    // Обновляем UI
+    document.querySelector('.work-timer').textContent = `⏱ ${task.time}с`;
+    document.querySelector('.work-reward').textContent = `💰 ${task.reward}`;
+    document.querySelector('.progress-fill').style.width = '0%';
+    
+    // Запускаем таймер
+    let timeLeft = task.time;
+    workTimer = setInterval(() => {
+        timeLeft--;
+        const progress = ((task.time - timeLeft) / task.time) * 100;
+        document.querySelector('.progress-fill').style.width = `${progress}%`;
+        document.querySelector('.work-timer').textContent = `⏱ ${timeLeft}с`;
+        
+        if (timeLeft <= 0) {
+            completeTask();
+        }
+    }, 1000);
+    
+    // Деактивируем кнопки
+    document.querySelectorAll('.task-btn').forEach(btn => btn.disabled = true);
+}
+
+function completeTask() {
+    clearInterval(workTimer);
+    
+    if (currentTask) {
+        gameState.money += currentTask.reward;
+        gameState.reputation += 5;
+        
+        showNotification(`Задание выполнено! Награда: ${currentTask.reward} 💰`);
+        
+        // Активируем кнопки
+        document.querySelectorAll('.task-btn').forEach(btn => btn.disabled = false);
+        
+        currentTask = null;
+        gameState.work.activeTask = null;
+        gameState.work.lastTaskTime = null;
+        
+        updateUI();
+    }
+}
+
+// Обновление UI для персонала
+function updateStaffUI() {
+    // Обновляем статистику
+    document.getElementById('cashiers-count').textContent = gameState.staff.cashiers.length;
+    document.getElementById('managers-count').textContent = gameState.staff.managers.length;
+    document.getElementById('warehouse-count').textContent = gameState.staff.warehouse.length;
+    
+    // Рассчитываем ежедневную зарплату
+    const dailySalary = calculateDailySalary();
+    document.getElementById('daily-salary').textContent = `${dailySalary} 💰`;
+    
+    // Обновляем список персонала
+    const staffList = document.getElementById('staff-list');
+    staffList.innerHTML = '';
+    
+    [...gameState.staff.cashiers, ...gameState.staff.managers, ...gameState.staff.warehouse]
+        .forEach(staff => {
+            const staffElement = document.createElement('div');
+            staffElement.className = 'staff-member';
+            staffElement.innerHTML = `
+                <div class="staff-info">
+                    <h4>${getStaffName(staff.type)}</h4>
+                    <p>Уровень: ${staff.level}</p>
+                    <p>Опыт: ${staff.experience}/100</p>
+                    <p>Зарплата: ${staff.salary} 💰/день</p>
+                </div>
+            `;
+            staffList.appendChild(staffElement);
+        });
+}
+
+function calculateDailySalary() {
+    let total = 0;
+    gameState.staff.cashiers.forEach(cashier => total += cashier.salary);
+    gameState.staff.managers.forEach(manager => total += manager.salary);
+    gameState.staff.warehouse.forEach(worker => total += worker.salary);
+    return total;
+}
+
+// Обновление UI для работы
+function updateWorkUI() {
+    if (currentTask) {
+        const timeLeft = Math.max(0, currentTask.time - Math.floor((Date.now() - gameState.work.lastTaskTime) / 1000));
+        document.querySelector('.work-timer').textContent = `⏱ ${timeLeft}с`;
+    }
+}
+
+// Обновляем основную функцию updateUI
+function updateUI() {
+    updateStats();
+    updateInventory();
+    updateSuppliers();
+    updateMarketing();
+    updateStaffUI();
+    updateWorkUI();
+    updateReferralInfo();
+}
+
+// Добавляем обработчики для кнопок заданий
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing code ...
+    
+    // Добавляем обработчики для кнопок заданий
+    document.querySelectorAll('.task-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const taskItem = btn.closest('.task-item');
+            if (taskItem) {
+                startTask(taskItem.dataset.task);
+            }
+        });
+    });
+}); 

@@ -146,6 +146,57 @@
                 </div>
             </div>
         </div>
+
+        <!-- Окно работы -->
+        <div class="window" id="work-window">
+            <div class="window-header">
+                <h2>Работа</h2>
+                <button class="close-btn">✕</button>
+            </div>
+            <div class="window-content">
+                <div class="work-container">
+                    <div class="work-info">
+                        <div class="work-timer">⏱ <span id="work-timer">0</span>с</div>
+                        <div class="work-reward">💰 <span id="work-reward">0</span></div>
+                        <div class="work-energy">⚡ <span id="work-energy">100</span>/100</div>
+                    </div>
+                    <div class="work-tasks">
+                        <h3>Доступные задания</h3>
+                        <div class="task-list">
+                            <div class="task-item" data-task="inventory">
+                                <h4>Учет товаров</h4>
+                                <p>Награда: 50 💰</p>
+                                <p>Время: 30 сек</p>
+                                <button class="task-btn">Начать</button>
+                            </div>
+                            <div class="task-item" data-task="pricing">
+                                <h4>Установка цен</h4>
+                                <p>Награда: 75 💰</p>
+                                <p>Время: 45 сек</p>
+                                <button class="task-btn">Начать</button>
+                            </div>
+                            <div class="task-item" data-task="display">
+                                <h4>Выкладка товаров</h4>
+                                <p>Награда: 100 💰</p>
+                                <p>Время: 60 сек</p>
+                                <button class="task-btn">Начать</button>
+                            </div>
+                            <div class="task-item" data-task="analysis">
+                                <h4>Анализ продаж</h4>
+                                <p>Награда: 150 💰</p>
+                                <p>Время: 90 сек</p>
+                                <button class="task-btn">Начать</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Нижняя навигация -->
@@ -169,6 +220,10 @@
         <button class="nav-btn" data-window="minigame-window">
             <span class="nav-icon">💼</span>
             <span>Подработка</span>
+        </button>
+        <button class="nav-btn" data-window="work-window">
+            <span class="nav-icon">💼</span>
+            <span>Работа</span>
         </button>
     </div>
 
