@@ -191,13 +191,58 @@ function showNotification(message, type = 'info') {
     }, 2000);
 }
 
+// Функция для переключения вкладок
+function switchTab(tabId) {
+    // Скрываем все вкладки
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    
+    // Убираем активный класс у всех кнопок
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Показываем нужную вкладку
+    document.getElementById(tabId).style.display = 'block';
+    
+    // Добавляем активный класс кнопке
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+}
+
 // Инициализация игры
 function initGame() {
-    loadGameState();
+    // Инициализация Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+    
+    // Инициализация магазина
     initShop();
-    updateUI();
-    setupEventListeners();
-    checkAttemptsReset();
+    
+    // Инициализация мини-игры
+    initMinigame();
+    
+    // Добавляем обработчики для кнопок навигации
+    document.querySelectorAll('.nav-item').forEach(button => {
+        button.addEventListener('click', () => {
+            // Убираем активный класс у всех кнопок
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Добавляем активный класс нажатой кнопке
+            button.classList.add('active');
+            
+            // Переключаем вкладку
+            const tabId = button.getAttribute('data-tab');
+            switchTab(tabId);
+        });
+    });
+    
+    // Показываем первую вкладку по умолчанию
+    switchTab('shop-tab');
 }
 
 // Загрузка состояния игры
