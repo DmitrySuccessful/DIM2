@@ -772,7 +772,67 @@ body {
     }
 }
 
-/* Нижнее меню навигации */
+/* Окна */
+.windows-container {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.window {
+    display: none;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+}
+
+.window.active {
+    display: block;
+}
+
+.window-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.window-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.close-btn:hover {
+    background: #e9ecef;
+    color: #333;
+}
+
+.window-content {
+    padding: 1rem;
+}
+
+/* Нижняя навигация */
 .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -786,7 +846,7 @@ body {
     z-index: 1000;
 }
 
-.nav-item {
+.nav-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -797,24 +857,90 @@ body {
     color: #666;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex: 1;
 }
 
-.nav-item.active {
+.nav-btn.active {
     color: #007bff;
 }
 
 .nav-icon {
-    width: 24px;
-    height: 24px;
+    font-size: 1.5rem;
 }
 
-.nav-item span {
+.nav-btn span:last-child {
     font-size: 0.75rem;
 }
 
-/* Скрываем верхние вкладки на мобильных устройствах */
+/* Анимации */
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Адаптивный дизайн */
 @media (max-width: 768px) {
-    .tabs {
-        display: none;
+    .windows-container {
+        top: 140px;
+        padding: 0.5rem;
+    }
+
+    .window-header {
+        padding: 0.75rem;
+    }
+
+    .window-content {
+        padding: 0.75rem;
+    }
+
+    .nav-btn {
+        padding: 0.25rem;
+    }
+
+    .nav-icon {
+        font-size: 1.25rem;
+    }
+}
+
+/* Темная тема */
+@media (prefers-color-scheme: dark) {
+    .window {
+        background: #2d2d2d;
+    }
+
+    .window-header {
+        background: #1a1a1a;
+        border-bottom-color: #444;
+    }
+
+    .window-header h2 {
+        color: #fff;
+    }
+
+    .close-btn {
+        color: #aaa;
+    }
+
+    .close-btn:hover {
+        background: #444;
+        color: #fff;
+    }
+
+    .bottom-nav {
+        background: #2d2d2d;
+    }
+
+    .nav-btn {
+        color: #aaa;
+    }
+
+    .nav-btn.active {
+        color: #4dabf7;
     }
 } 

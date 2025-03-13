@@ -43,157 +43,135 @@
         </svg>
     </div>
 
-    <div class="game-container">
-        <!-- Информационная панель -->
-        <div class="info-panel">
-            <div class="stats">
-                <div class="money">💰 <span id="money">1000</span></div>
-                <div class="reputation">⭐ <span id="reputation">0</span></div>
-                <div class="level">📈 <span id="level">1</span></div>
-                <div class="referral-points">🎁 <span id="referral-points">0</span></div>
+    <!-- Информационная панель -->
+    <div class="info-panel">
+        <div class="stats">
+            <div class="money">💰 <span id="money">1000</span></div>
+            <div class="reputation">⭐ <span id="reputation">0</span></div>
+            <div class="level">📈 <span id="level">1</span></div>
+            <div class="referral-points">🎁 <span id="referral-points">0</span></div>
+        </div>
+        <div class="time">🕒 <span id="game-time">День 1</span></div>
+    </div>
+
+    <!-- Окна -->
+    <div class="windows-container">
+        <!-- Окно магазина -->
+        <div class="window" id="shop-window">
+            <div class="window-header">
+                <h2>Магазин</h2>
+                <button class="close-btn">✕</button>
             </div>
-            <div class="time">🕒 <span id="game-time">День 1</span></div>
+            <div class="window-content">
+                <div class="category-selector">
+                    <button class="category-btn" data-category="clothes">👕 Одежда</button>
+                    <button class="category-btn" data-category="shoes">👟 Обувь</button>
+                    <button class="category-btn" data-category="accessories">👜 Аксессуары</button>
+                </div>
+                <div class="shop-grid"></div>
+            </div>
         </div>
 
-        <!-- Основной экран -->
-        <div class="main-screen">
-            <div class="shop-view">
-                <div class="shop-grid" id="shop-grid">
-                    <!-- Товары будут добавляться динамически -->
+        <!-- Окно поставщиков -->
+        <div class="window" id="suppliers-window">
+            <div class="window-header">
+                <h2>Поставщики</h2>
+                <button class="close-btn">✕</button>
+            </div>
+            <div class="window-content">
+                <div class="suppliers-list"></div>
+            </div>
+        </div>
+
+        <!-- Окно маркетинга -->
+        <div class="window" id="marketing-window">
+            <div class="window-header">
+                <h2>Маркетинг</h2>
+                <button class="close-btn">✕</button>
+            </div>
+            <div class="window-content">
+                <div class="marketing-options"></div>
+            </div>
+        </div>
+
+        <!-- Окно сотрудников -->
+        <div class="window" id="employees-window">
+            <div class="window-header">
+                <h2>Сотрудники</h2>
+                <button class="close-btn">✕</button>
+            </div>
+            <div class="window-content">
+                <div class="employees-list"></div>
+            </div>
+        </div>
+
+        <!-- Окно рефералов -->
+        <div class="window" id="referral-window">
+            <div class="window-header">
+                <h2>Реферальная программа</h2>
+                <button class="close-btn">✕</button>
+            </div>
+            <div class="window-content">
+                <div class="referral-info">
+                    <h3>Ваша реферальная ссылка:</h3>
+                    <div class="referral-link">
+                        <input type="text" id="referral-link" readonly>
+                        <button onclick="copyReferralLink()">Копировать</button>
+                    </div>
+                    <div class="referral-stats"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Панель управления -->
-        <div class="control-panel">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="shop">Магазин</button>
-                <button class="tab-btn" data-tab="suppliers">Поставщики</button>
-                <button class="tab-btn" data-tab="marketing">Маркетинг</button>
-                <button class="tab-btn" data-tab="employees">Сотрудники</button>
-                <button class="tab-btn" data-tab="referral">Рефералы</button>
-                <button class="tab-btn" data-tab="minigame">Мини-игра</button>
+        <!-- Окно мини-игры -->
+        <div class="window" id="minigame-window">
+            <div class="window-header">
+                <h2>Мини-игра</h2>
+                <button class="close-btn">✕</button>
             </div>
-
-            <!-- Содержимое вкладок -->
-            <div class="tab-content">
-                <!-- Вкладка Магазин -->
-                <div class="tab-pane active" id="shop-tab">
-                    <div class="category-selector">
-                        <button class="category-btn" data-category="clothes">👕 Одежда</button>
-                        <button class="category-btn" data-category="shoes">👟 Обувь</button>
-                        <button class="category-btn" data-category="accessories">👜 Аксессуары</button>
+            <div class="window-content">
+                <div class="minigame-container">
+                    <div class="minigame-info">
+                        <div class="minigame-timer">⏱ <span id="minigame-timer">30</span>с</div>
+                        <div class="minigame-score">🎯 <span id="minigame-score">0</span></div>
+                        <div class="minigame-attempts">🎮 <span id="minigame-attempts">3</span>/3</div>
                     </div>
-                    <div class="inventory" id="inventory">
-                        <!-- Инвентарь будет добавляться динамически -->
+                    <div class="minigame-area">
+                        <div class="player-basket"></div>
                     </div>
-                </div>
-
-                <!-- Вкладка Поставщики -->
-                <div class="tab-pane" id="suppliers-tab">
-                    <div class="suppliers-list" id="suppliers-list">
-                        <!-- Список поставщиков будет добавляться динамически -->
-                    </div>
-                </div>
-
-                <!-- Вкладка Маркетинг -->
-                <div class="tab-pane" id="marketing-tab">
-                    <div class="marketing-options">
-                        <button class="marketing-btn" data-action="social">📱 Соцсети</button>
-                        <button class="marketing-btn" data-action="bloggers">🎥 Блогеры</button>
-                        <button class="marketing-btn" data-action="targeted">🎯 Таргет</button>
-                    </div>
-                </div>
-
-                <!-- Вкладка Сотрудники -->
-                <div class="tab-pane" id="employees-tab">
-                    <div class="employees-list" id="employees-list">
-                        <!-- Список сотрудников будет добавляться динамически -->
-                    </div>
-                </div>
-
-                <!-- Вкладка Рефералы -->
-                <div class="tab-pane" id="referral-tab">
-                    <div class="referral-info">
-                        <h3>Ваша реферальная ссылка:</h3>
-                        <div class="referral-link">
-                            <input type="text" id="referral-link" readonly>
-                            <button onclick="copyReferralLink()">Копировать</button>
-                        </div>
-                        <div class="referral-stats">
-                            <p>Приглашено: <span id="referral-count">0</span></p>
-                            <p>Заработано: <span id="referral-earnings">0</span></p>
-                        </div>
-                        <div class="referral-rewards">
-                            <h3>Награды за приглашение:</h3>
-                            <ul>
-                                <li>1 реферал = 100 очков</li>
-                                <li>5 рефералов = 500 очков + бонус 10% к продажам</li>
-                                <li>10 рефералов = 1000 очков + бонус 20% к продажам</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Вкладка Мини-игра -->
-                <div class="tab-pane" id="minigame-tab">
-                    <div class="minigame-container">
-                        <div class="minigame-header">
-                            <h2>Ловец Товаров</h2>
-                            <p class="minigame-description">Ловите падающие товары и зарабатывайте очки!</p>
-                        </div>
-                        <div class="minigame-info">
-                            <div class="minigame-timer">
-                                <span class="timer-icon">⏱</span>
-                                <span id="minigame-timer">20</span>с
-                            </div>
-                            <div class="minigame-score">
-                                <span class="score-icon">🎯</span>
-                                <span id="minigame-score">0</span>
-                            </div>
-                            <div class="minigame-attempts">
-                                <span class="attempts-icon">🎮</span>
-                                <span id="minigame-attempts">3</span>/3
-                            </div>
-                        </div>
-                        <div class="minigame-area" id="minigame-area">
-                            <div class="player-basket"></div>
-                        </div>
-                        <div class="minigame-controls">
-                            <button id="start-minigame" class="minigame-btn">
-                                <span class="btn-icon">🎮</span>
-                                Начать игру
-                            </button>
-                            <button id="buy-attempt" class="minigame-btn buy-btn">
-                                <span class="btn-icon">⭐</span>
-                                Купить попытку (50 звезд)
-                            </button>
-                        </div>
-                        <div class="minigame-tutorial">
-                            <h3>Как играть:</h3>
-                            <ul>
-                                <li>Нажмите "Начать игру"</li>
-                                <li>Ловите падающие товары кликом/тапом</li>
-                                <li>Футболка = 10 очков</li>
-                                <li>Джинсы = 20 очков</li>
-                                <li>Кроссовки = 30 очков</li>
-                                <li>Сумка = 15 очков</li>
-                            </ul>
-                            <div class="minigame-rewards">
-                                <h3>Награды:</h3>
-                                <ul>
-                                    <li>100+ очков = 10 звезд</li>
-                                    <li>200+ очков = 25 звезд</li>
-                                    <li>300+ очков = 50 звезд</li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="minigame-controls">
+                        <button id="start-minigame" class="minigame-btn">Начать игру</button>
+                        <button id="buy-attempt" class="minigame-btn buy-btn">Купить попытку (50 ⭐)</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Нижняя навигация -->
+    <div class="bottom-nav">
+        <button class="nav-btn" data-window="shop-window">
+            <span class="nav-icon">🏪</span>
+            <span>Магазин</span>
+        </button>
+        <button class="nav-btn" data-window="suppliers-window">
+            <span class="nav-icon">📦</span>
+            <span>Поставщики</span>
+        </button>
+        <button class="nav-btn" data-window="marketing-window">
+            <span class="nav-icon">📢</span>
+            <span>Маркетинг</span>
+        </button>
+        <button class="nav-btn" data-window="employees-window">
+            <span class="nav-icon">👥</span>
+            <span>Сотрудники</span>
+        </button>
+        <button class="nav-btn" data-window="minigame-window">
+            <span class="nav-icon">🎮</span>
+            <span>Мини-игра</span>
+        </button>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html> 

@@ -205,21 +205,20 @@ function initGame() {
     // Инициализация мини-игры
     initMinigame();
     
-    // Добавляем обработчики для кнопок вкладок
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    // Добавляем обработчики для навигационных кнопок
+    document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            // Убираем активный класс у всех кнопок и вкладок
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            
-            // Добавляем активный класс нажатой кнопке
-            btn.classList.add('active');
-            
-            // Показываем соответствующую вкладку
-            const tabId = btn.getAttribute('data-tab');
-            const tabPane = document.querySelector(`#${tabId}-tab`);
-            if (tabPane) {
-                tabPane.classList.add('active');
+            const windowId = btn.getAttribute('data-window');
+            openWindow(windowId);
+        });
+    });
+    
+    // Добавляем обработчики для кнопок закрытия окон
+    document.querySelectorAll('.close-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const window = btn.closest('.window');
+            if (window) {
+                closeWindow(window.id);
             }
         });
     });
@@ -238,16 +237,81 @@ function initGame() {
         });
     });
     
-    // Показываем первую вкладку по умолчанию
-    const firstTab = document.querySelector('.tab-btn');
-    if (firstTab) {
-        firstTab.click();
-    }
+    // Открываем окно магазина по умолчанию
+    openWindow('shop-window');
     
     // Активируем первую категорию по умолчанию
     const firstCategory = document.querySelector('.category-btn');
     if (firstCategory) {
         firstCategory.click();
+    }
+    
+    // Загружаем сохраненное состояние игры
+    loadGameState();
+    
+    // Обновляем интерфейс
+    updateUI();
+}
+
+// Открытие окна
+function openWindow(windowId) {
+    // Закрываем все окна
+    document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+    
+    // Убираем активный класс у всех навигационных кнопок
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    // Открываем нужное окно
+    const window = document.getElementById(windowId);
+    if (window) {
+        window.classList.add('active');
+        
+        // Активируем соответствующую навигационную кнопку
+        const navBtn = document.querySelector(`.nav-btn[data-window="${windowId}"]`);
+        if (navBtn) {
+            navBtn.classList.add('active');
+        }
+        
+        // Обновляем содержимое окна
+        updateWindowContent(windowId);
+    }
+}
+
+// Закрытие окна
+function closeWindow(windowId) {
+    const window = document.getElementById(windowId);
+    if (window) {
+        window.classList.remove('active');
+        
+        // Убираем активный класс у навигационной кнопки
+        const navBtn = document.querySelector(`.nav-btn[data-window="${windowId}"]`);
+        if (navBtn) {
+            navBtn.classList.remove('active');
+        }
+    }
+}
+
+// Обновление содержимого окна
+function updateWindowContent(windowId) {
+    switch (windowId) {
+        case 'shop-window':
+            updateShopUI();
+            break;
+        case 'suppliers-window':
+            updateSuppliers();
+            break;
+        case 'marketing-window':
+            updateMarketing();
+            break;
+        case 'employees-window':
+            updateEmployees();
+            break;
+        case 'referral-window':
+            updateReferralInfo();
+            break;
+        case 'minigame-window':
+            updateMinigameUI();
+            break;
     }
 }
 
