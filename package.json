@@ -1,0 +1,13 @@
+{
+  "name": "myshop-game",
+  "version": "1.0.0",
+  "description": "MyShop - Симулятор Интернет-Магазина",
+  "main": "scripts/main.js",
+  "scripts": {
+    "generate-prompts": "node scripts/generate_prompts.js",
+    "process-images": "node scripts/process_images.js"
+  },
+  "dependencies": {
+    "sharp": "^0.32.1"
+  }
+} 

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MyShop - Увлекательный симулятор управления интернет-магазином">
+    <meta name="theme-color" content="#4CAF50">
+    <title>MyShop - Симулятор Интернет-Магазина</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container header-content">
+            <h1 class="game-title">MyShop</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-icon">💰</span>
+                    <span id="money" class="stat-value">1000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">⭐</span>
+                    <span id="level" class="stat-value">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">❤️</span>
+                    <span id="reputation" class="stat-value">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Навигация -->
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><button class="nav-btn active" data-section="shop-section">Магазин</button></li>
+                <li><button class="nav-btn" data-section="marketing-section">Маркетинг</button></li>
+                <li><button class="nav-btn" data-section="staff-section">Персонал</button></li>
+                <li><button class="nav-btn" data-section="minigame-section">Мини-игра</button></li>
+                <li><button class="nav-btn" data-section="settings-section">Настройки</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="main">
+        <div class="container">
+            <!-- Магазин -->
+            <section id="shop-section" class="section active">
+                <h2>Мой Магазин</h2>
+                <div id="shop-grid" class="shop-grid">
+                    <!-- Товары будут добавляться динамически -->
+                </div>
+            </section>
+
+            <!-- Маркетинг -->
+            <section id="marketing-section" class="section">
+                <h2>Маркетинг</h2>
+                <div class="marketing-options">
+                    <!-- Кампании будут добавляться динамически -->
+                </div>
+            </section>
+
+            <!-- Персонал -->
+            <section id="staff-section" class="section">
+                <h2>Персонал</h2>
+                <div id="staff-list" class="staff-list">
+                    <!-- Сотрудники будут добавляться динамически -->
+                </div>
+            </section>
+
+            <!-- Мини-игра -->
+            <section id="minigame-section" class="section">
+                <h2>Ловец Товаров</h2>
+                <div class="minigame-container">
+                    <canvas id="minigame-canvas"></canvas>
+                    <div class="minigame-controls">
+                        <button id="start-game" class="secondary-btn">Начать игру</button>
+                        <div class="score">Счёт: <span id="game-score">0</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Настройки -->
+            <section id="settings-section" class="section">
+                <h2>Настройки</h2>
+                <div class="settings-container">
+                    <button id="clear-save" class="danger-btn">Очистить сохранение</button>
+                    <button id="help-btn" class="secondary-btn">Помощь</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-copyright">
+                © 2024 MyShop
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link" id="help-link">Помощь</a>
+                <a href="#" class="footer-link" id="about-link">О проекте</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Загрузчик -->
+    <div id="loading" class="loader">
+        <!-- Спиннер добавляется через CSS -->
+    </div>
+
+    <!-- Сообщение об ошибке -->
+    <div id="error-message" class="error-message" style="display: none;">
+        <p>Произошла ошибка. Пожалуйста, обновите страницу.</p>
+    </div>
+
+    <!-- Скрипты -->
+    <script type="module">
+        // Глобальная обработка ошибок
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Error:', {
+                message: msg,
+                url: url,
+                line: lineNo,
+                column: columnNo,
+                error: error
+            });
+            
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'block';
+            errorMessage.querySelector('p').textContent = 
+                'Произошла ошибка при загрузке игры. Пожалуйста, обновите страницу.';
+            
+            // Скрываем загрузчик
+            document.getElementById('loading').style.display = 'none';
+            
+            return false;
+        };
+
+        // Импорт модулей
+        try {
+            const { CONFIG } = await import('./scripts/config.js');
+            const { GameState, Product, StaffMember } = await import('./scripts/models.js');
+            const { 
+                ProductService, 
+                StaffService, 
+                MarketingService, 
+                SaveService, 
+                ReferralService 
+            } = await import('./scripts/services.js');
+            const { UI } = await import('./scripts/ui.js');
+            const { Minigame } = await import('./scripts/minigame.js');
+            const { Game } = await import('./scripts/game.js');
+
+            // Инициализация игры
+            const game = new Game();
+            window.game = game; // Для отладки
+
+            // Скрываем загрузчик
+            document.getElementById('loading').style.display = 'none';
+        } catch (error) {
+            console.error('Failed to initialize game:', error);
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'block';
+            errorMessage.querySelector('p').textContent = 
+                'Не удалось инициализировать игру. Пожалуйста, проверьте консоль для деталей.';
+            document.getElementById('loading').style.display = 'none';
+        }
+    </script>
+</body>
+</html> 
