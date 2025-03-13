@@ -3,22 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Угадай число</title>
+    <title>Симулятор Интернет-Магазина</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Угадай число!</h1>
-        <div id="game-area">
-            <p>Я загадал число от 1 до 100. Попробуй угадать!</p>
-            <input type="number" id="guess-input" placeholder="Введите число">
-            <button id="guess-button">Угадать</button>
-            <p id="message"></p>
-            <p id="attempts">Попыток: 0</p>
+    <!-- Добавляем SVG-спрайт -->
+    <div style="display: none;">
+        <?xml version="1.0" encoding="UTF-8"?>
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <!-- Футболка -->
+            <symbol id="tshirt" viewBox="0 0 24 24">
+                <path d="M20 4h-3.5l-1-1h-5l-1 1H4v2h16V4z" fill="#3498db"/>
+                <path d="M4 6h16v12H4V6z" fill="#2980b9"/>
+                <path d="M8 8h8v2H8V8z" fill="#fff"/>
+                <path d="M8 12h8v2H8v-2z" fill="#fff"/>
+            </symbol>
+
+            <!-- Джинсы -->
+            <symbol id="jeans" viewBox="0 0 24 24">
+                <path d="M4 4h16v16H4V4z" fill="#2ecc71"/>
+                <path d="M8 8h8v12H8V8z" fill="#27ae60"/>
+                <path d="M4 8h4v12H4V8z" fill="#27ae60"/>
+                <path d="M16 8h4v12h-4V8z" fill="#27ae60"/>
+                <path d="M8 12h8v2H8v-2z" fill="#fff"/>
+            </symbol>
+
+            <!-- Кроссовки -->
+            <symbol id="sneakers" viewBox="0 0 24 24">
+                <path d="M4 8h16v8H4V8z" fill="#e74c3c"/>
+                <path d="M8 12h12v4H8v-4z" fill="#c0392b"/>
+                <path d="M12 8h4v4h-4V8z" fill="#fff"/>
+                <path d="M4 12h4v4H4v-4z" fill="#fff"/>
+            </symbol>
+
+            <!-- Сумка -->
+            <symbol id="bag" viewBox="0 0 24 24">
+                <path d="M8 4h8v4H8V4z" fill="#f1c40f"/>
+                <path d="M6 8h12v12H6V8z" fill="#f39c12"/>
+                <path d="M10 12h4v8h-4v-8z" fill="#fff"/>
+                <path d="M8 8h8v2H8V8z" fill="#fff"/>
+            </symbol>
+        </svg>
+    </div>
+
+    <div class="game-container">
+        <!-- Основная информация -->
+        <div class="info-panel">
+            <div class="stats">
+                <div class="money">💰 <span id="money">1000</span></div>
+                <div class="reputation">⭐ <span id="reputation">0</span></div>
+                <div class="level">📈 <span id="level">1</span></div>
+                <div class="referral-points">🎁 <span id="referral-points">0</span></div>
+            </div>
+            <div class="time">🕒 <span id="game-time">День 1</span></div>
         </div>
-        <button id="new-game">Новая игра</button>
+
+        <!-- Основной игровой экран -->
+        <div class="main-screen">
+            <div class="shop-view">
+                <!-- Здесь будет отображаться магазин -->
+                <div class="shop-grid" id="shop-grid">
+                    <!-- Товары будут добавляться динамически -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель управления -->
+        <div class="control-panel">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="shop">Магазин</button>
+                <button class="tab-btn" data-tab="suppliers">Поставщики</button>
+                <button class="tab-btn" data-tab="marketing">Маркетинг</button>
+                <button class="tab-btn" data-tab="employees">Сотрудники</button>
+                <button class="tab-btn" data-tab="referral">Рефералы</button>
+                <button class="tab-btn" data-tab="minigame">Мини-игра</button>
+            </div>
+
+            <!-- Содержимое вкладок -->
+            <div class="tab-content">
+                <!-- Вкладка Магазин -->
+                <div class="tab-pane active" id="shop-tab">
+                    <div class="category-selector">
+                        <button class="category-btn" data-category="clothes">👕 Одежда</button>
+                        <button class="category-btn" data-category="shoes">👟 Обувь</button>
+                        <button class="category-btn" data-category="accessories">👜 Аксессуары</button>
+                    </div>
+                    <div class="inventory" id="inventory">
+                        <!-- Инвентарь будет добавляться динамически -->
+                    </div>
+                </div>
+
+                <!-- Вкладка Поставщики -->
+                <div class="tab-pane" id="suppliers-tab">
+                    <div class="suppliers-list" id="suppliers-list">
+                        <!-- Список поставщиков будет добавляться динамически -->
+                    </div>
+                </div>
+
+                <!-- Вкладка Маркетинг -->
+                <div class="tab-pane" id="marketing-tab">
+                    <div class="marketing-options">
+                        <button class="marketing-btn" data-action="social">📱 Соцсети</button>
+                        <button class="marketing-btn" data-action="bloggers">🎥 Блогеры</button>
+                        <button class="marketing-btn" data-action="targeted">🎯 Таргет</button>
+                    </div>
+                </div>
+
+                <!-- Вкладка Сотрудники -->
+                <div class="tab-pane" id="employees-tab">
+                    <div class="employees-list" id="employees-list">
+                        <!-- Список сотрудников будет добавляться динамически -->
+                    </div>
+                </div>
+
+                <!-- Вкладка Рефералы -->
+                <div class="tab-pane" id="referral-tab">
+                    <div class="referral-info">
+                        <h3>Ваша реферальная ссылка:</h3>
+                        <div class="referral-link">
+                            <input type="text" id="referral-link" readonly>
+                            <button onclick="copyReferralLink()">Копировать</button>
+                        </div>
+                        <div class="referral-stats">
+                            <p>Приглашено: <span id="referral-count">0</span></p>
+                            <p>Заработано: <span id="referral-earnings">0</span></p>
+                        </div>
+                        <div class="referral-rewards">
+                            <h3>Награды за приглашение:</h3>
+                            <ul>
+                                <li>1 реферал = 100 очков</li>
+                                <li>5 рефералов = 500 очков + бонус 10% к продажам</li>
+                                <li>10 рефералов = 1000 очков + бонус 20% к продажам</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вкладка Мини-игра -->
+                <div class="tab-pane" id="minigame-tab">
+                    <div class="minigame-container">
+                        <div class="minigame-header">
+                            <h2>Ловец Товаров</h2>
+                            <p class="minigame-description">Ловите падающие товары и зарабатывайте очки!</p>
+                        </div>
+                        <div class="minigame-info">
+                            <div class="minigame-timer">
+                                <span class="timer-icon">⏱</span>
+                                <span id="minigame-timer">20</span>с
+                            </div>
+                            <div class="minigame-score">
+                                <span class="score-icon">🎯</span>
+                                <span id="minigame-score">0</span>
+                            </div>
+                            <div class="minigame-attempts">
+                                <span class="attempts-icon">🎮</span>
+                                <span id="minigame-attempts">3</span>/3
+                            </div>
+                        </div>
+                        <div class="minigame-area" id="minigame-area">
+                            <div class="player-basket"></div>
+                        </div>
+                        <div class="minigame-controls">
+                            <button id="start-minigame" class="minigame-btn">
+                                <span class="btn-icon">🎮</span>
+                                Начать игру
+                            </button>
+                            <button id="buy-attempt" class="minigame-btn buy-btn">
+                                <span class="btn-icon">⭐</span>
+                                Купить попытку (50 звезд)
+                            </button>
+                        </div>
+                        <div class="minigame-tutorial">
+                            <h3>Как играть:</h3>
+                            <ul>
+                                <li>Нажмите "Начать игру"</li>
+                                <li>Ловите падающие товары кликом/тапом</li>
+                                <li>Футболка = 10 очков</li>
+                                <li>Джинсы = 20 очков</li>
+                                <li>Кроссовки = 30 очков</li>
+                                <li>Сумка = 15 очков</li>
+                            </ul>
+                            <div class="minigame-rewards">
+                                <h3>Награды:</h3>
+                                <ul>
+                                    <li>100+ очков = 10 звезд</li>
+                                    <li>200+ очков = 25 звезд</li>
+                                    <li>300+ очков = 50 звезд</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
-</html>
+</html> 
