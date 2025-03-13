@@ -46,22 +46,26 @@ export const GAME_CONFIG = {
             BRONZE: {
                 value: 10,
                 probability: 0.5,
-                sprite: 'bronze_item.png'
+                sprite: 'bronze_box.png',
+                color: '#CD7F32'
             },
             SILVER: {
                 value: 25,
                 probability: 0.3,
-                sprite: 'silver_item.png'
+                sprite: 'silver_box.png',
+                color: '#C0C0C0'
             },
             GOLD: {
                 value: 50,
                 probability: 0.15,
-                sprite: 'gold_item.png'
+                sprite: 'gold_box.png',
+                color: '#FFD700'
             },
             RARE: {
                 value: 100,
                 probability: 0.05,
-                sprite: 'rare_item.png',
+                sprite: 'rare_box.png',
+                color: '#FF5722',
                 specialEffect: 'glow'
             }
         },
@@ -69,24 +73,31 @@ export const GAME_CONFIG = {
             MAGNET: {
                 duration: 5000,
                 radius: 100,
-                probability: 0.1
+                probability: 0.1,
+                sprite: 'magnet.png',
+                color: '#2196F3'
             },
             SLOW_TIME: {
                 duration: 3000,
                 slowFactor: 0.5,
-                probability: 0.08
+                probability: 0.08,
+                sprite: 'clock.png',
+                color: '#9C27B0'
             },
             MULTIPLIER: {
                 duration: 4000,
                 factor: 2,
-                probability: 0.06
+                probability: 0.06,
+                sprite: 'star.png',
+                color: '#4CAF50'
             }
         },
         obstacles: {
             BROKEN_ITEM: {
                 penalty: -20,
                 probability: 0.1,
-                sprite: 'broken_item.png'
+                sprite: 'broken_box.png',
+                color: '#F44336'
             }
         },
         backgrounds: [
@@ -97,7 +108,32 @@ export const GAME_CONFIG = {
         comboSystem: {
             baseMultiplier: 1.1,
             maxMultiplier: 5,
-            comboTimeout: 1000
+            comboTimeout: 1000,
+            colors: {
+                low: '#4CAF50',
+                medium: '#FFC107',
+                high: '#FF5722'
+            }
+        },
+        player: {
+            sprite: 'cart.png',
+            color: '#4CAF50',
+            width: 80,
+            height: 60,
+            speed: 8,
+            acceleration: 0.5,
+            maxSpeed: 12,
+            friction: 0.92
+        },
+        canvas: {
+            maxWidth: 800,
+            aspectRatio: 0.75,
+            background: {
+                gradient: {
+                    top: '#87CEEB',
+                    bottom: '#E0F7FA'
+                }
+            }
         }
     },
 

@@ -30,23 +30,44 @@ export class Minigame {
     }
 
     loadAssets() {
-        this.assets = {
-            backgrounds: GAME_CONFIG.minigame.backgrounds.map(src => {
+        try {
+            // Создаем базовые ассеты
+            this.assets = {
+                backgrounds: [],
+                items: {},
+                cart: new Image()
+            };
+
+            // Загружаем фоны
+            GAME_CONFIG.minigame.backgrounds.forEach((src, index) => {
                 const img = new Image();
-                img.src = `assets/${src}`;
-                return img;
-            }),
-            items: Object.entries(GAME_CONFIG.minigame.itemTypes).reduce((acc, [key, value]) => {
-                acc[key] = new Image();
-                acc[key].src = `assets/${value.sprite}`;
-                return acc;
-            }, {}),
-            cart: (() => {
+                img.onerror = () => {
+                    console.warn(`Не удалось загрузить фон ${src}`);
+                };
+                img.src = `assets/backgrounds/${src}`;
+                this.assets.backgrounds[index] = img;
+            });
+
+            // Загружаем спрайты предметов
+            Object.entries(GAME_CONFIG.minigame.itemTypes).forEach(([key, value]) => {
                 const img = new Image();
-                img.src = 'assets/cart.png';
-                return img;
-            })()
-        };
+                img.onerror = () => {
+                    console.warn(`Не удалось загрузить спрайт ${value.sprite}`);
+                };
+                img.src = `assets/items/${value.sprite}`;
+                this.assets.items[key] = img;
+            });
+
+            // Загружаем спрайт корзины
+            this.assets.cart.onerror = () => {
+                console.warn('Не удалось загрузить спрайт корзины');
+            };
+            this.assets.cart.src = 'assets/cart.png';
+
+        } catch (error) {
+            console.error('Ошибка при загрузке ассетов:', error);
+            // Продолжаем работу с цветными прямоугольниками
+        }
     }
 
     setupGame() {
@@ -313,8 +334,15 @@ export class Minigame {
 
         // Draw background
         const bg = this.assets.backgrounds[this.currentBackground];
-        if (bg.complete) {
+        if (bg && bg.complete && bg.naturalHeight !== 0) {
             this.ctx.drawImage(bg, 0, 0, this.canvas.width, this.canvas.height);
+        } else {
+            // Фолбэк на градиентный фон
+            const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#E0F7FA');
+            this.ctx.fillStyle = gradient;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
 
         // Draw items
@@ -324,9 +352,10 @@ export class Minigame {
             this.ctx.rotate(item.rotation);
             
             const sprite = this.assets.items[item.type];
-            if (sprite && sprite.complete) {
+            if (sprite && sprite.complete && sprite.naturalHeight !== 0) {
                 this.ctx.drawImage(sprite, -item.width/2, -item.height/2, item.width, item.height);
             } else {
+                // Фолбэк на цветные прямоугольники
                 this.ctx.fillStyle = this.getItemColor(item.type);
                 this.ctx.fillRect(-item.width/2, -item.height/2, item.width, item.height);
             }
@@ -340,7 +369,7 @@ export class Minigame {
         this.ctx.translate(this.player.x + this.player.width/2, this.player.y + this.player.height/2);
         this.ctx.rotate(cartTilt);
         
-        if (this.assets.cart.complete) {
+        if (this.assets.cart.complete && this.assets.cart.naturalHeight !== 0) {
             this.ctx.drawImage(
                 this.assets.cart,
                 -this.player.width/2,
@@ -349,6 +378,7 @@ export class Minigame {
                 this.player.height
             );
         } else {
+            // Фолбэк на цветной прямоугольник для корзины
             this.ctx.fillStyle = '#4CAF50';
             this.ctx.fillRect(-this.player.width/2, -this.player.height/2, this.player.width, this.player.height);
         }
