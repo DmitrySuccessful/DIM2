@@ -3,12 +3,22 @@ import { CONFIG } from './config.js';
 // Класс для управления мини-игрой
 export class Minigame {
     constructor(canvas, ctx, gameState) {
+        if (!canvas || !ctx || !gameState) {
+            throw new Error('Missing required parameters for Minigame initialization');
+        }
+
         this.canvas = canvas;
         this.ctx = ctx;
         this.gameState = gameState;
         this.isRunning = false;
         this.score = 0;
         this.timeLeft = CONFIG.MINIGAME.gameDuration;
+        this.animationFrameId = null;
+        
+        // Настройка размеров canvas
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+
         this.player = {
             x: this.canvas.width / 2,
             y: this.canvas.height - 50,
@@ -16,36 +26,118 @@ export class Minigame {
             height: 50,
             speed: CONFIG.MINIGAME.playerSpeed
         };
+        
         this.items = [];
         this.keys = {};
         this.setupControls();
     }
 
+    // Настройка размеров canvas
+    resizeCanvas() {
+        const container = this.canvas.parentElement;
+        if (!container) return;
+
+        const maxWidth = Math.min(container.clientWidth, CONFIG.MINIGAME.canvasWidth);
+        const ratio = CONFIG.MINIGAME.canvasHeight / CONFIG.MINIGAME.canvasWidth;
+        
+        this.canvas.width = maxWidth;
+        this.canvas.height = maxWidth * ratio;
+    }
+
     // Настройка управления
     setupControls() {
-        window.addEventListener('keydown', (e) => this.keys[e.key] = true);
-        window.addEventListener('keyup', (e) => this.keys[e.key] = false);
+        try {
+            window.addEventListener('keydown', (e) => {
+                if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                    this.keys[e.key] = true;
+                }
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                    this.keys[e.key] = false;
+                }
+            });
+
+            // Добавляем поддержку тач-управления
+            this.canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = this.canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                
+                if (x < this.canvas.width / 2) {
+                    this.keys['ArrowLeft'] = true;
+                    this.keys['ArrowRight'] = false;
+                } else {
+                    this.keys['ArrowLeft'] = false;
+                    this.keys['ArrowRight'] = true;
+                }
+            });
+
+            this.canvas.addEventListener('touchend', () => {
+                this.keys['ArrowLeft'] = false;
+                this.keys['ArrowRight'] = false;
+            });
+        } catch (error) {
+            console.error('Failed to setup controls:', error);
+            throw new Error('Failed to initialize game controls');
+        }
     }
 
     // Запуск игры
     start() {
         if (this.isRunning) return;
         
-        this.isRunning = true;
+        try {
+            this.isRunning = true;
+            this.score = 0;
+            this.timeLeft = CONFIG.MINIGAME.gameDuration;
+            this.items = [];
+            this.spawnItem();
+            this.gameLoop();
+            return this.score;
+        } catch (error) {
+            console.error('Failed to start game:', error);
+            this.stop();
+            throw error;
+        }
+    }
+
+    // Остановка игры
+    stop() {
+        this.isRunning = false;
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+        this.items = [];
         this.score = 0;
         this.timeLeft = CONFIG.MINIGAME.gameDuration;
-        this.items = [];
-        this.spawnItem();
-        this.gameLoop();
+        this.clearCanvas();
+    }
+
+    // Очистка canvas
+    clearCanvas() {
+        if (this.ctx) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
     }
 
     // Основной игровой цикл
     gameLoop() {
         if (!this.isRunning) return;
 
-        this.update();
-        this.draw();
-        requestAnimationFrame(() => this.gameLoop());
+        try {
+            this.update();
+            this.draw();
+            this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+        } catch (error) {
+            console.error('Error in game loop:', error);
+            this.stop();
+        }
     }
 
     // Обновление состояния игры

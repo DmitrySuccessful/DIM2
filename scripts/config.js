@@ -146,15 +146,29 @@ export const CONFIG = Object.freeze({
     // Minigame settings
     MINIGAME: Object.freeze({
         canvasWidth: 800,
-        canvasHeight: 400,
-        playerSpeed: 5,
-        itemSpeed: 3,
-        spawnInterval: 2000,
+        canvasHeight: 600,
+        playerSpeed: 8,
+        itemSpeed: 4,
+        spawnInterval: 1000,
         gameDuration: 60,
         rewards: Object.freeze({
             common: 10,
             rare: 25,
             epic: 50
+        }),
+        powerups: Object.freeze({
+            magnet: {
+                duration: 5,
+                radius: 100
+            },
+            slowdown: {
+                duration: 5,
+                factor: 0.5
+            },
+            multiplier: {
+                duration: 5,
+                factor: 2
+            }
         })
     }),
 
