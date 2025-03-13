@@ -191,25 +191,6 @@ function showNotification(message, type = 'info') {
     }, 2000);
 }
 
-// Функция для переключения вкладок
-function switchTab(tabId) {
-    // Скрываем все вкладки
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.style.display = 'none';
-    });
-    
-    // Убираем активный класс у всех кнопок
-    document.querySelectorAll('.tab-button').forEach(button => {
-        button.classList.remove('active');
-    });
-    
-    // Показываем нужную вкладку
-    document.getElementById(tabId).style.display = 'block';
-    
-    // Добавляем активный класс кнопке
-    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-}
-
 // Инициализация игры
 function initGame() {
     // Инициализация Telegram WebApp
@@ -224,25 +205,24 @@ function initGame() {
     // Инициализация мини-игры
     initMinigame();
     
-    // Добавляем обработчики для кнопок навигации
-    document.querySelectorAll('.nav-item').forEach(button => {
-        button.addEventListener('click', () => {
-            // Убираем активный класс у всех кнопок
-            document.querySelectorAll('.nav-item').forEach(btn => {
-                btn.classList.remove('active');
-            });
+    // Добавляем обработчики для кнопок вкладок
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Убираем активный класс у всех кнопок и вкладок
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
             
             // Добавляем активный класс нажатой кнопке
-            button.classList.add('active');
+            btn.classList.add('active');
             
-            // Переключаем вкладку
-            const tabId = button.getAttribute('data-tab');
-            switchTab(tabId);
+            // Показываем соответствующую вкладку
+            const tabId = btn.getAttribute('data-tab');
+            document.querySelector(`#${tabId}-tab`).classList.add('active');
         });
     });
     
     // Показываем первую вкладку по умолчанию
-    switchTab('shop-tab');
+    document.querySelector('.tab-btn').click();
 }
 
 // Загрузка состояния игры

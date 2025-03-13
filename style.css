@@ -74,7 +74,7 @@ body {
     padding-bottom: 0.5rem;
 }
 
-.tab-button {
+.tab-btn {
     padding: 10px 20px;
     border: none;
     background: none;
@@ -85,23 +85,27 @@ body {
     transition: all 0.3s ease;
 }
 
-.tab-button:hover {
+.tab-btn:hover {
     color: #007bff;
     border-bottom-color: #007bff;
 }
 
-.tab-button.active {
+.tab-btn.active {
     color: #007bff;
     border-bottom-color: #007bff;
     font-weight: bold;
 }
 
-.tab-content {
+.tab-pane {
     display: none;
     padding: 20px;
     background: #fff;
     border-radius: 0 0 10px 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.tab-pane.active {
+    display: block;
 }
 
 /* Кнопки категорий */
@@ -410,7 +414,7 @@ body {
         gap: 0.5rem;
     }
 
-    .tab-button {
+    .tab-btn {
         flex: 1 1 calc(50% - 0.5rem);
         text-align: center;
     }
@@ -539,17 +543,17 @@ body {
         background-color: #2d2d2d;
     }
 
-    .tab-button {
+    .tab-btn {
         color: #aaa;
     }
     
-    .tab-button:hover,
-    .tab-button.active {
+    .tab-btn:hover,
+    .tab-btn.active {
         color: #4dabf7;
         border-bottom-color: #4dabf7;
     }
     
-    .tab-content {
+    .tab-pane {
         background: #2d3436;
     }
 }
