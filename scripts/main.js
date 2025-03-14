@@ -6,22 +6,41 @@ import { UI } from './ui.js';
 import { Minigame } from './minigame.js';
 import { Game } from './game.js';
 
-// Инициализация игры
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        // Создаем экземпляр игры
-        const game = new Game();
-
-        // Обновляем состояние игры каждую секунду
-        setInterval(() => {
-            game.update();
-        }, 1000);
-    } catch (error) {
-        console.error('Ошибка при инициализации игры:', error);
-        // Показываем сообщение об ошибке пользователю
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'error-message';
-        errorMessage.textContent = 'Произошла ошибка при загрузке игры. Пожалуйста, обновите страницу.';
-        document.body.appendChild(errorMessage);
+class App {
+    constructor() {
+        this.init();
     }
+
+    async init() {
+        try {
+            // Инициализация Telegram Mini App
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+
+            // Инициализация основных компонентов
+            this.gameState = new GameState(CONFIG);
+            this.ui = new UI(this.gameState);
+            this.game = new Game(this.gameState, this.ui);
+
+            // Делаем игру доступной глобально для мини-игры
+            window.game = this.game;
+
+            // Скрываем загрузчик
+            document.getElementById('loading').style.display = 'none';
+        } catch (error) {
+            console.error('Failed to initialize app:', error);
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'block';
+            errorMessage.querySelector('p').textContent = 
+                'Не удалось инициализировать приложение. Пожалуйста, обновите страницу.';
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+}
+
+// Инициализация приложения при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    new App();
 }); 

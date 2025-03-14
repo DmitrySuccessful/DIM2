@@ -76,7 +76,7 @@ export const CONFIG = Object.freeze({
             name: "Смартфон",
             basePrice: 500,
             sellPrice: 800,
-            image: "https://via.placeholder.com/150?text=Smartphone",
+            image: "/MyShop/images/products/smartphone.svg",
             category: "electronics"
         },
         {
@@ -84,7 +84,7 @@ export const CONFIG = Object.freeze({
             name: "Ноутбук",
             basePrice: 1000,
             sellPrice: 1500,
-            image: "https://via.placeholder.com/150?text=Laptop",
+            image: "/MyShop/images/products/laptop.svg",
             category: "electronics"
         },
         {
@@ -92,7 +92,7 @@ export const CONFIG = Object.freeze({
             name: "Футболка",
             basePrice: 20,
             sellPrice: 40,
-            image: "https://via.placeholder.com/150?text=T-shirt",
+            image: "/MyShop/images/products/tshirt.svg",
             category: "clothing"
         },
         {
@@ -100,7 +100,7 @@ export const CONFIG = Object.freeze({
             name: "Джинсы",
             basePrice: 50,
             sellPrice: 100,
-            image: "https://via.placeholder.com/150?text=Jeans",
+            image: "/MyShop/images/products/jeans.svg",
             category: "clothing"
         }
     ]),

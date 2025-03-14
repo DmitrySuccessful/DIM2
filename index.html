@@ -128,51 +128,6 @@
     </div>
 
     <!-- Скрипты -->
-    <script type="module">
-        // Инициализация Telegram Mini App
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-
-        // Глобальная обработка ошибок
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
-            console.error('Error:', {
-                message: msg,
-                url: url,
-                line: lineNo,
-                column: columnNo,
-                error: error
-            });
-            
-            const errorMessage = document.getElementById('error-message');
-            errorMessage.style.display = 'block';
-            errorMessage.querySelector('p').textContent = 
-                'Произошла ошибка при загрузке игры. Пожалуйста, обновите страницу.';
-            
-            document.getElementById('loading').style.display = 'none';
-            return false;
-        };
-
-        // Импорт модулей
-        try {
-            const { CONFIG } = await import('/MyShop/scripts/config.js');
-            const { GameState } = await import('/MyShop/scripts/models.js');
-            const { UI } = await import('/MyShop/scripts/ui.js');
-            const { Game } = await import('/MyShop/scripts/game.js');
-
-            // Инициализация игры
-            const game = new Game();
-            window.game = game;
-
-            // Скрываем загрузчик
-            document.getElementById('loading').style.display = 'none';
-        } catch (error) {
-            console.error('Failed to initialize game:', error);
-            const errorMessage = document.getElementById('error-message');
-            errorMessage.style.display = 'block';
-            errorMessage.querySelector('p').textContent = 
-                'Не удалось инициализировать игру. Пожалуйста, проверьте консоль для деталей.';
-            document.getElementById('loading').style.display = 'none';
-        }
-    </script>
+    <script type="module" src="/MyShop/scripts/main.js"></script>
 </body>
 </html> 
