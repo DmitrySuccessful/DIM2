@@ -1,142 +1,169 @@
 import { state, elements, updateBalance } from './main.js';
 
-// Task definitions
-const taskDefinitions = {
-    clickTask: {
-        id: 'clickTask',
-        title: 'Click Master',
-        description: 'Click the coin {target} times',
-        type: 'click',
-        targetValues: [10, 50, 100, 500, 1000],
-        rewards: [5, 25, 50, 250, 500],
-        getProgress: () => state.stats.totalClicks,
-        onComplete: (reward) => {
-            state.balance += reward;
-            updateBalance();
-        }
-    },
-    earningTask: {
-        id: 'earningTask',
-        title: 'Wealth Builder',
-        description: 'Earn a total of {target} Nitcoins',
-        type: 'earning',
-        targetValues: [100, 500, 1000, 5000, 10000],
-        rewards: [10, 50, 100, 500, 1000],
-        getProgress: () => state.stats.totalEarned,
-        onComplete: (reward) => {
-            state.balance += reward;
-            updateBalance();
-        }
-    },
-    gameTask: {
-        id: 'gameTask',
-        title: 'Game Master',
-        description: 'Win {target} mini-games',
-        type: 'game',
-        targetValues: [1, 5, 10, 25, 50],
-        rewards: [20, 100, 200, 500, 1000],
-        getProgress: () => state.stats.gamesWon,
-        onComplete: (reward) => {
-            state.balance += reward;
-            updateBalance();
-        }
-    }
+// Task Types
+const TaskType = {
+    CLICKS: 'clicks',
+    BALANCE: 'balance',
+    GAMES_WON: 'gamesWon',
+    TIME_PLAYED: 'timePlayed'
 };
 
-// Initialize tasks
-export function initTasks() {
-    // Initialize task state if not exists
-    if (!state.tasks.active) {
-        state.tasks.active = {};
-        state.tasks.completed = new Set();
-        
-        // Initialize first level of each task
-        Object.values(taskDefinitions).forEach(task => {
-            activateTask(task, 0);
+// Task Definitions
+const tasks = [
+    {
+        id: 'click_100',
+        type: TaskType.CLICKS,
+        target: 100,
+        reward: 50,
+        title: 'Начинающий кликер',
+        description: 'Кликните 100 раз'
+    },
+    {
+        id: 'balance_1000',
+        type: TaskType.BALANCE,
+        target: 1000,
+        reward: 200,
+        title: 'Первая тысяча',
+        description: 'Накопите 1000 нитокоинов'
+    },
+    {
+        id: 'games_3',
+        type: TaskType.GAMES_WON,
+        target: 3,
+        reward: 300,
+        title: 'Игрок',
+        description: 'Выиграйте 3 мини-игры'
+    }
+    // Add more tasks as needed
+];
+
+// Task Manager
+class TaskManager {
+    constructor(gameState) {
+        this.gameState = gameState;
+        this.tasks = tasks;
+        this.activeTask = null;
+    }
+
+    // Initialize tasks
+    init() {
+        this.renderTasks();
+        this.checkTasks();
+    }
+
+    // Render tasks in UI
+    renderTasks() {
+        const tasksContainer = document.getElementById('tasks-list');
+        if (!tasksContainer) return;
+
+        tasksContainer.innerHTML = '';
+
+        this.tasks.forEach(task => {
+            const taskElement = this.createTaskElement(task);
+            tasksContainer.appendChild(taskElement);
         });
     }
 
-    // Render tasks
-    renderTasks();
-}
-
-// Activate a new task
-function activateTask(taskDef, level) {
-    if (level >= taskDef.targetValues.length) return;
-
-    state.tasks.active[taskDef.id] = {
-        ...taskDef,
-        currentLevel: level,
-        target: taskDef.targetValues[level],
-        reward: taskDef.rewards[level]
-    };
-}
-
-// Render tasks
-function renderTasks() {
-    elements.taskList.innerHTML = '';
-
-    Object.values(state.tasks.active).forEach(task => {
-        const progress = task.getProgress();
-        const progressPercent = Math.min((progress / task.target) * 100, 100);
-        
+    // Create task element
+    createTaskElement(task) {
         const taskElement = document.createElement('div');
         taskElement.className = 'task';
+        taskElement.dataset.taskId = task.id;
+
+        const isCompleted = this.gameState.completedTasks.includes(task.id);
+        if (isCompleted) {
+            taskElement.classList.add('completed');
+        }
+
+        const progress = this.calculateTaskProgress(task);
+
         taskElement.innerHTML = `
             <div class="task-header">
                 <h3>${task.title}</h3>
                 <span class="task-reward">+${task.reward}</span>
             </div>
-            <p>${task.description.replace('{target}', task.target)}</p>
+            <p>${task.description}</p>
             <div class="task-progress">
                 <div class="progress-bar">
-                    <div class="progress" style="width: ${progressPercent}%"></div>
+                    <div class="progress" style="width: ${progress}%"></div>
                 </div>
-                <span class="progress-text">${progress}/${task.target}</span>
+                <span class="progress-text">${Math.min(100, progress)}%</span>
             </div>
         `;
 
-        elements.taskList.appendChild(taskElement);
-    });
-}
+        return taskElement;
+    }
 
-// Check task progress
-export function checkTasks() {
-    Object.values(state.tasks.active).forEach(task => {
-        const progress = task.getProgress();
-        if (progress >= task.target) {
-            // Complete task
-            task.onComplete(task.reward);
-            state.tasks.completed.add(`${task.id}_${task.currentLevel}`);
-            
-            // Activate next level
-            activateTask(taskDefinitions[task.id], task.currentLevel + 1);
-            
-            // Show completion animation
-            showTaskComplete(task);
+    // Calculate task progress
+    calculateTaskProgress(task) {
+        let current = 0;
+
+        switch (task.type) {
+            case TaskType.CLICKS:
+                current = this.gameState.stats.totalClicks;
+                break;
+            case TaskType.BALANCE:
+                current = this.gameState.balance;
+                break;
+            case TaskType.GAMES_WON:
+                current = this.gameState.stats.gamesWon;
+                break;
+            case TaskType.TIME_PLAYED:
+                current = (Date.now() - this.gameState.startTime) / 1000 / 60; // minutes
+                break;
         }
-    });
 
-    // Update task display
-    renderTasks();
+        return (current / task.target) * 100;
+    }
+
+    // Check task completion
+    checkTasks() {
+        this.tasks.forEach(task => {
+            if (this.gameState.completedTasks.includes(task.id)) return;
+
+            const progress = this.calculateTaskProgress(task);
+            if (progress >= 100) {
+                this.completeTask(task);
+            }
+        });
+    }
+
+    // Complete task
+    completeTask(task) {
+        if (this.gameState.completedTasks.includes(task.id)) return;
+
+        // Add reward
+        this.gameState.balance += task.reward;
+        this.gameState.completedTasks.push(task.id);
+
+        // Update UI
+        const taskElement = document.querySelector(`[data-task-id="${task.id}"]`);
+        if (taskElement) {
+            taskElement.classList.add('completed');
+            this.showTaskCompletionNotification(task);
+        }
+
+        // Save game
+        this.gameState.save();
+    }
+
+    // Show task completion notification
+    showTaskCompletionNotification(task) {
+        const notification = document.createElement('div');
+        notification.className = 'task-notification';
+        notification.innerHTML = `
+            <h4>Задание выполнено!</h4>
+            <p>${task.title}</p>
+            <span class="reward">+${task.reward}</span>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Remove notification after animation
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
 }
 
-// Show task completion animation
-function showTaskComplete(task) {
-    const notification = document.createElement('div');
-    notification.className = 'task-complete';
-    notification.innerHTML = `
-        <h3>Task Complete!</h3>
-        <p>${task.title}</p>
-        <p class="reward">+${task.reward} Nitcoins</p>
-    `;
-
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 3000);
-}
-
-// Export functions
-export {
-    taskDefinitions,
-    renderTasks
-}; 
+export default TaskManager; 

@@ -1,165 +1,181 @@
 import { state, updateBalance } from '../main.js';
 
 export class TicTacToe {
-    constructor(container, onGameEnd) {
-        this.container = container;
-        this.onGameEnd = onGameEnd;
+    constructor(gameManager) {
+        this.gameManager = gameManager;
         this.board = Array(9).fill('');
-        this.currentPlayer = 'x';
-        this.gameOver = false;
+        this.currentPlayer = 'X';
+        this.gameEnded = false;
         this.reward = 50;
 
-        this.init();
+        this.start();
     }
 
-    init() {
-        this.container.innerHTML = `
-            <div class="game-container">
-                <div class="tictactoe-board"></div>
-                <div class="game-controls">
-                    <div class="game-status"></div>
-                    <div class="game-buttons">
-                        <button class="game-btn primary" id="restart-game">New Game</button>
-                    </div>
-                </div>
+    // Start new game
+    start() {
+        this.board = Array(9).fill('');
+        this.currentPlayer = 'X';
+        this.gameEnded = false;
+        this.render();
+    }
+
+    // Render game board
+    render() {
+        const container = document.getElementById('game-container');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="tictactoe-board">
+                ${this.board.map((cell, index) => `
+                    <button class="tictactoe-cell${cell ? ' ' + cell.toLowerCase() : ''}" 
+                            data-index="${index}"
+                            ${cell || this.gameEnded ? 'disabled' : ''}>
+                        ${cell}
+                    </button>
+                `).join('')}
+            </div>
+            <div class="game-status">
+                ${this.gameEnded ? '' : `Ход: ${this.currentPlayer}`}
             </div>
         `;
 
-        this.boardElement = this.container.querySelector('.tictactoe-board');
-        this.statusElement = this.container.querySelector('.game-status');
-        this.restartButton = this.container.querySelector('#restart-game');
-
-        this.createBoard();
-        this.setupEventListeners();
-        this.updateStatus();
-    }
-
-    createBoard() {
-        this.boardElement.innerHTML = '';
-        for (let i = 0; i < 9; i++) {
-            const cell = document.createElement('button');
-            cell.className = 'tictactoe-cell';
-            cell.dataset.index = i;
-            this.boardElement.appendChild(cell);
-        }
-    }
-
-    setupEventListeners() {
-        this.boardElement.addEventListener('click', (e) => {
-            if (e.target.classList.contains('tictactoe-cell')) {
-                this.handleCellClick(e.target);
-            }
+        // Add click handlers
+        container.querySelectorAll('.tictactoe-cell').forEach(cell => {
+            cell.addEventListener('click', () => this.makeMove(parseInt(cell.dataset.index)));
         });
-
-        this.restartButton.addEventListener('click', () => this.resetGame());
     }
 
-    handleCellClick(cell) {
-        const index = cell.dataset.index;
-        if (this.board[index] || this.gameOver) return;
+    // Make move
+    makeMove(index) {
+        if (this.board[index] || this.gameEnded) return;
 
-        // Player move
-        this.makeMove(index);
-        
+        // Update board
+        this.board[index] = this.currentPlayer;
+
         // Check for win or draw
         if (this.checkWin()) {
+            this.gameEnded = true;
+            if (this.currentPlayer === 'X') {
+                this.gameManager.onGameWin();
+            }
+            this.render();
             this.endGame('win');
             return;
         }
+
         if (this.checkDraw()) {
+            this.gameEnded = true;
+            this.render();
             this.endGame('draw');
             return;
         }
 
-        // AI move
-        this.makeAIMove();
+        // Switch player
+        this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+
+        // Render board
+        this.render();
+
+        // AI move if it's O's turn
+        if (this.currentPlayer === 'O') {
+            setTimeout(() => this.makeAIMove(), 500);
+        }
     }
 
-    makeMove(index) {
-        this.board[index] = this.currentPlayer;
-        const cell = this.boardElement.children[index];
-        cell.textContent = this.currentPlayer.toUpperCase();
-        cell.classList.add(this.currentPlayer);
-        this.currentPlayer = this.currentPlayer === 'x' ? 'o' : 'x';
-        this.updateStatus();
-    }
-
+    // AI move
     makeAIMove() {
-        setTimeout(() => {
-            if (this.gameOver) return;
+        if (this.gameEnded) return;
 
-            // Find best move
-            const availableMoves = this.board
-                .map((cell, index) => cell ? null : index)
-                .filter(index => index !== null);
-
-            if (availableMoves.length === 0) return;
-
-            // Simple AI: randomly choose an available move
-            const randomIndex = Math.floor(Math.random() * availableMoves.length);
-            const move = availableMoves[randomIndex];
-
-            this.makeMove(move);
-
-            // Check for win or draw
-            if (this.checkWin()) {
-                this.endGame('lose');
-                return;
-            }
-            if (this.checkDraw()) {
-                this.endGame('draw');
-            }
-        }, 500);
+        // Find best move
+        const bestMove = this.findBestMove();
+        if (bestMove !== -1) {
+            this.makeMove(bestMove);
+        }
     }
 
+    // Find best move for AI
+    findBestMove() {
+        // First, try to win
+        for (let i = 0; i < 9; i++) {
+            if (!this.board[i]) {
+                this.board[i] = 'O';
+                if (this.checkWin()) {
+                    this.board[i] = '';
+                    return i;
+                }
+                this.board[i] = '';
+            }
+        }
+
+        // Second, block player's winning move
+        for (let i = 0; i < 9; i++) {
+            if (!this.board[i]) {
+                this.board[i] = 'X';
+                if (this.checkWin()) {
+                    this.board[i] = '';
+                    return i;
+                }
+                this.board[i] = '';
+            }
+        }
+
+        // Third, try to take center
+        if (!this.board[4]) return 4;
+
+        // Finally, take any available corner or side
+        const corners = [0, 2, 6, 8];
+        const sides = [1, 3, 5, 7];
+
+        // Try corners first
+        for (const i of corners) {
+            if (!this.board[i]) return i;
+        }
+
+        // Then try sides
+        for (const i of sides) {
+            if (!this.board[i]) return i;
+        }
+
+        return -1;
+    }
+
+    // Check for win
     checkWin() {
-        const winPatterns = [
+        const lines = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
             [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
             [0, 4, 8], [2, 4, 6] // Diagonals
         ];
 
-        return winPatterns.some(pattern => {
-            const [a, b, c] = pattern;
+        return lines.some(([a, b, c]) => {
             return this.board[a] &&
                    this.board[a] === this.board[b] &&
                    this.board[a] === this.board[c];
         });
     }
 
+    // Check for draw
     checkDraw() {
         return this.board.every(cell => cell !== '');
     }
 
     endGame(result) {
-        this.gameOver = true;
+        this.gameEnded = true;
         state.stats.gamesPlayed++;
 
         if (result === 'win') {
             state.stats.gamesWon++;
             state.balance += this.reward;
             updateBalance();
-            this.statusElement.textContent = `You won! +${this.reward} Nitcoins`;
+            this.render();
         } else if (result === 'lose') {
-            this.statusElement.textContent = 'Game Over - You lost!';
+            this.render();
         } else {
-            this.statusElement.textContent = 'Game Over - Draw!';
+            this.render();
         }
 
-        this.onGameEnd(result === 'win');
+        this.gameManager.onGameEnd(result === 'win');
     }
+}
 
-    updateStatus() {
-        if (!this.gameOver) {
-            this.statusElement.textContent = `Current turn: ${this.currentPlayer.toUpperCase()}`;
-        }
-    }
-
-    resetGame() {
-        this.board = Array(9).fill('');
-        this.currentPlayer = 'x';
-        this.gameOver = false;
-        this.createBoard();
-        this.updateStatus();
-    }
-} 
+export default TicTacToe; 
