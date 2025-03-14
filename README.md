@@ -1,82 +1,140 @@
-# MyShop - Симулятор Интернет-Магазина
+# Nitcoin Clicker
 
-MyShop - это увлекательная игра-симулятор интернет-магазина, разработанная как Telegram Mini App. В игре вы управляете собственным интернет-магазином, покупаете товары, нанимаете сотрудников, проводите маркетинговые кампании и развиваете свой бизнес.
+A fun and engaging clicker game where you earn Nitcoins by clicking, completing tasks, and playing mini-games.
 
-## Основные функции
+## Features
 
-- **Управление магазином**: Покупайте товары, устанавливайте цены и управляйте инвентарем
-- **Система поставщиков**: Нанимайте поставщиков для расширения ассортимента
-- **Маркетинг**: Проводите рекламные кампании для привлечения клиентов
-- **Сотрудники**: Нанимайте и управляйте персоналом
-- **Реферальная система**: Приглашайте друзей и получайте бонусы
-- **Мини-игра "Ловец Товаров"**: Увлекательная игра для заработка дополнительных звезд
+- **Core Gameplay**
+  - Click to earn Nitcoins
+  - Animated coin with particle effects
+  - Auto-save progress
+  - Beautiful and responsive UI
 
-## Технологии
+- **Tasks System**
+  - Multiple tasks to complete
+  - Progressive difficulty
+  - Rewards for completion
+  - Real-time progress tracking
 
-- HTML5
-- CSS3
-- JavaScript
-- SVG
-- Telegram Mini App API
+- **Mini-Games**
+  - Tic Tac Toe
+    - Play against AI
+    - Win Nitcoins for victories
+  - Sudoku
+    - Multiple difficulty levels
+    - Generated puzzles
+    - Rewards for completion
 
-## Установка
+- **Achievements**
+  - Multiple achievement categories
+  - Progressive levels
+  - Special rewards
+  - Real-time tracking
+  - Achievement notifications
 
-1. Клонируйте репозиторий:
-```bash
-git clone https://github.com/your-username/MyShop.git
+## Project Structure
+
+```
+nitcoin-clicker/
+├── index.html
+├── src/
+│   ├── css/
+│   │   ├── style.css
+│   │   ├── animations.css
+│   │   └── games.css
+│   ├── js/
+│   │   ├── main.js
+│   │   ├── tasks.js
+│   │   ├── games.js
+│   │   ├── achievements.js
+│   │   └── games/
+│   │       ├── tictactoe.js
+│   │       └── sudoku.js
+│   └── assets/
+│       ├── images/
+│       └── sounds/
+└── README.md
 ```
 
-2. Откройте `index.html` в браузере или загрузите файлы на веб-сервер.
+## Getting Started
 
-## Как играть
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/nitcoin-clicker.git
+   ```
 
-1. **Начало игры**:
-   - У вас есть начальный капитал 1000 денежных единиц
-   - Начните с покупки базовых товаров
+2. Open `index.html` in a modern web browser.
 
-2. **Развитие магазина**:
-   - Покупайте товары у поставщиков
-   - Устанавливайте цены
-   - Следите за спросом и предложением
+3. Start clicking and earning Nitcoins!
 
-3. **Маркетинг**:
-   - Проводите рекламные кампании
-   - Улучшайте репутацию магазина
-   - Привлекайте новых клиентов
+## Game Mechanics
 
-4. **Персонал**:
-   - Нанимайте сотрудников
-   - Улучшайте их навыки
-   - Оптимизируйте зарплаты
+### Clicking
+- Each click earns you Nitcoins
+- Particle effects show where you clicked
+- The coin bounces when clicked
 
-5. **Мини-игра**:
-   - Играйте в "Ловец Товаров"
-   - Зарабатывайте звезды
-   - Улучшайте свои навыки
+### Tasks
+- Complete tasks to earn rewards
+- Tasks get progressively harder
+- Multiple task categories available
 
-## Реферальная система
+### Mini-Games
+- **Tic Tac Toe**
+  - Play against a simple AI
+  - Win to earn 50 Nitcoins
+  - Quick and fun gameplay
 
-- Приглашайте друзей через уникальную реферальную ссылку
-- Получайте бонусы за каждого приглашенного друга
-- Используйте звезды для покупки дополнительных попыток в мини-игре
+- **Sudoku**
+  - Solve randomly generated puzzles
+  - Win 100 Nitcoins for completion
+  - Multiple difficulty levels
 
-## Разработка
+### Achievements
+- **Click Master**
+  - Track total clicks
+  - 5 levels of progression
+  - Increasing rewards
 
-Проект использует современные веб-технологии и следует лучшим практикам разработки:
+- **Wealth Builder**
+  - Track total earnings
+  - 5 levels of progression
+  - Large rewards for completion
 
-- Адаптивный дизайн
-- Оптимизация производительности
-- Поддержка темной темы
-- Улучшенная доступность
+- **Game Master**
+  - Track mini-game victories
+  - 5 levels of progression
+  - Special rewards
 
-## Лицензия
+## Technical Details
 
-MIT License - свободное использование и модификация кода.
+### Technologies Used
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Local Storage for save data
 
-## Автор
+### Key Features
+- Modular JavaScript architecture
+- Responsive design
+- Efficient state management
+- Smooth animations
+- Auto-save functionality
 
-[Ваше имя]
+## Contributing
 
-## Поддержка
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-По всем вопросам обращайтесь через Issues в репозитории проекта. 
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Inspired by classic clicker games
+- Built with modern web technologies
+- Designed for fun and engagement 

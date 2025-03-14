@@ -1,0 +1,101 @@
+/* Click Particles */
+.particles {
+    position: absolute;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary-color);
+    animation: float-up 1s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes float-up {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-50px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Coin Animation */
+.coin-bounce {
+    animation: bounce 0.3s cubic-bezier(0.36, 0, 0.66, -0.56);
+}
+
+@keyframes bounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+/* Task Complete Animation */
+.task-complete {
+    animation: complete 0.5s ease-out;
+}
+
+@keyframes complete {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Modal Animation */
+.modal.show {
+    animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Game Win Animation */
+.game-win {
+    animation: win-pulse 0.5s ease-out;
+}
+
+@keyframes win-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Tab Switch Animation */
+.tab-content.active {
+    animation: slide-in 0.3s ease-out;
+}
+
+@keyframes slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Button Click Animation */
+.btn-click {
+    animation: click 0.2s ease-out;
+}
+
+@keyframes click {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+} 

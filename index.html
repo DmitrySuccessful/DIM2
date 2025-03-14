@@ -2,132 +2,119 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="format-detection" content="telephone=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="MobileOptimized" content="176">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="robots" content="noindex,nofollow">
-    <meta name="description" content="MyShop - Увлекательный симулятор управления интернет-магазином">
-    <meta name="theme-color" content="#4CAF50">
-    <title>MyShop - Симулятор Интернет-Магазина</title>
-    
-    <!-- Telegram Mini App -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Стили -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/MyShop/styles/main.css">
-    <link rel="stylesheet" href="/MyShop/styles/components.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nitcoin Clicker</title>
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="src/css/animations.css">
+    <link rel="stylesheet" href="src/css/games.css">
 </head>
 <body>
-    <!-- Шапка -->
-    <header class="header">
-        <div class="container header-content">
-            <h1 class="game-title">MyShop</h1>
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-icon">💰</span>
-                    <span id="money" class="stat-value">1000</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-icon">⭐</span>
-                    <span id="level" class="stat-value">1</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-icon">❤️</span>
-                    <span id="reputation" class="stat-value">0</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Навигация -->
-    <nav class="nav">
-        <div class="container">
-            <div class="nav-list">
-                <button class="nav-btn active" data-section="shop-section">Магазин</button>
-                <button class="nav-btn" data-section="marketing-section">Маркетинг</button>
-                <button class="nav-btn" data-section="staff-section">Персонал</button>
-                <button class="nav-btn" data-section="minigame-section">Мини-игра</button>
-                <button class="nav-btn" data-section="settings-section">Настройки</button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Основной контент -->
-    <main class="main">
-        <div class="container">
-            <!-- Магазин -->
-            <section id="shop-section" class="section active">
-                <h2>Мой Магазин</h2>
-                <div id="shop-grid" class="shop-grid">
-                    <!-- Товары будут добавляться динамически -->
-                </div>
-            </section>
-
-            <!-- Маркетинг -->
-            <section id="marketing-section" class="section">
-                <h2>Маркетинг</h2>
-                <div class="marketing-options">
-                    <!-- Кампании будут добавляться динамически -->
-                </div>
-            </section>
-
-            <!-- Персонал -->
-            <section id="staff-section" class="section">
-                <h2>Персонал</h2>
-                <div id="staff-list" class="staff-list">
-                    <!-- Сотрудники будут добавляться динамически -->
-                </div>
-            </section>
-
-            <!-- Мини-игра -->
-            <section id="minigame-section" class="section">
-                <h2>Ловец Товаров</h2>
-                <div class="minigame-container">
-                    <div class="minigame-instructions">
-                        <p>Используйте касания экрана для управления корзиной.</p>
-                        <p>Ловите падающие товары, чтобы заработать деньги!</p>
-                        <ul>
-                            <li>💰 Монеты: +10 монет</li>
-                            <li>⭐ Звезды: +50 монет</li>
-                            <li>🪨 Камни: -20 монет</li>
-                        </ul>
-                    </div>
-                    <canvas id="minigame-canvas"></canvas>
-                    <div class="minigame-controls">
-                        <div class="score">Счёт: <span id="game-score">0</span></div>
-                        <button id="start-game" class="primary-btn">Начать игру</button>
-                        <div class="time">Время: <span id="game-time">60</span>с</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Настройки -->
-            <section id="settings-section" class="section">
-                <h2>Настройки</h2>
-                <div class="settings-container">
-                    <button id="clear-save" class="danger-btn">Очистить сохранение</button>
-                    <button id="help-btn" class="secondary-btn">Помощь</button>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <!-- Загрузчик -->
-    <div id="loading" class="loader">
-        <!-- Спиннер добавляется через CSS -->
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="loader-spinner"></div>
+        <p>Loading...</p>
     </div>
 
-    <!-- Сообщение об ошибке -->
-    <div id="error-message" class="error-message" style="display: none;">
-        <p>Произошла ошибка. Пожалуйста, обновите страницу.</p>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header with Balance -->
+        <header class="header">
+            <h1>Nitcoin Clicker</h1>
+            <div class="balance-container">
+                <span id="balance">0</span>
+                <button id="withdraw" class="withdraw-btn">Вывести</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="main">Главная</button>
+            <button class="tab-btn" data-tab="tasks">Задания</button>
+            <button class="tab-btn" data-tab="games">Подработка</button>
+            <button class="tab-btn" data-tab="achievements">Достижения</button>
+        </nav>
+
+        <!-- Main Tab -->
+        <section id="main" class="tab-content active">
+            <div class="coin-container">
+                <div id="coin" class="coin">
+                    <img src="src/assets/images/coin.svg" alt="Nitcoin">
+                </div>
+                <div id="click-particles" class="particles"></div>
+            </div>
+            <div id="stats" class="stats">
+                <p>Кликов: <span id="clicks">0</span></p>
+                <p>За клик: <span id="per-click">1</span></p>
+            </div>
+        </section>
+
+        <!-- Tasks Tab -->
+        <section id="tasks" class="tab-content">
+            <div class="tasks-list">
+                <div class="task" data-id="video" data-reward="100">
+                    <h3>Посмотри видео</h3>
+                    <p>Награда: 100 монет</p>
+                    <button class="task-btn">Выполнить</button>
+                </div>
+                <div class="task" data-id="share" data-reward="50">
+                    <h3>Поделись ссылкой</h3>
+                    <p>Награда: 50 монет</p>
+                    <button class="task-btn">Выполнить</button>
+                </div>
+                <div class="task" data-id="article" data-reward="75">
+                    <h3>Прочитай статью</h3>
+                    <p>Награда: 75 монет</p>
+                    <button class="task-btn">Выполнить</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Games Tab -->
+        <section id="games" class="tab-content">
+            <div class="games-grid">
+                <div class="game-card" data-game="tictactoe">
+                    <h3>Крестики-нолики</h3>
+                    <p>Награда: 50 монет</p>
+                    <button class="game-btn">Играть</button>
+                </div>
+                <div class="game-card" data-game="sudoku">
+                    <h3>Судоку</h3>
+                    <p>Награда: 100 монет</p>
+                    <button class="game-btn">Играть</button>
+                </div>
+                <div class="game-card" data-game="crossword">
+                    <h3>Кроссворд</h3>
+                    <p>Награда: 75 монет</p>
+                    <button class="game-btn">Играть</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements Tab -->
+        <section id="achievements" class="tab-content">
+            <div class="achievements-list">
+                <h2>Достижения</h2>
+                <div id="achievements-list"></div>
+            </div>
+        </section>
     </div>
 
-    <!-- Скрипты -->
-    <script type="module" src="/MyShop/scripts/main.js"></script>
+    <!-- Game Modals -->
+    <div id="game-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="game-container"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="src/js/config.js"></script>
+    <script src="src/js/utils.js"></script>
+    <script src="src/js/storage.js"></script>
+    <script src="src/js/animations.js"></script>
+    <script src="src/js/games/tictactoe.js"></script>
+    <script src="src/js/games/sudoku.js"></script>
+    <script src="src/js/games/crossword.js"></script>
+    <script src="src/js/main.js"></script>
 </body>
 </html> 
