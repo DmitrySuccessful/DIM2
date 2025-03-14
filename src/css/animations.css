@@ -98,4 +98,166 @@
     0% { transform: scale(1); }
     50% { transform: scale(0.95); }
     100% { transform: scale(1); }
+}
+
+/* Анимации для монеты */
+@keyframes coinHover {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes coinClick {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+/* Частицы при клике */
+@keyframes particleFade {
+    0% { 
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% { 
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0);
+    }
+}
+
+/* Анимация прогресс-бара */
+@keyframes progressPulse {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Анимация появления подсказок */
+@keyframes tooltipAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Анимация достижений */
+@keyframes achievementSlideIn {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    10% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    90% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Применение анимаций */
+.coin {
+    animation: coinHover 2s ease-in-out infinite;
+    transition: transform 0.2s ease;
+}
+
+.coin:active {
+    animation: coinClick 0.2s ease-in-out;
+}
+
+.particle {
+    position: absolute;
+    pointer-events: none;
+    animation: particleFade 0.8s ease-out forwards;
+}
+
+.progress {
+    background: linear-gradient(90deg, #ffd700, #ff6b6b, #4ecdc4);
+    background-size: 200% 200%;
+    animation: progressPulse 2s ease infinite;
+}
+
+[data-tooltip]:hover::after {
+    animation: tooltipAppear 0.3s ease forwards;
+}
+
+.achievement-notification {
+    animation: achievementSlideIn 4s ease-in-out forwards;
+}
+
+/* Анимации для интерфейса */
+.tab-btn {
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tab-content {
+    transition: opacity 0.3s ease;
+}
+
+.tab-content.active {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Анимация для модальных окон */
+.modal {
+    transition: opacity 0.3s ease;
+}
+
+.modal-content {
+    animation: modalSlideIn 0.5s ease forwards;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Анимация для загрузчика */
+@keyframes loaderSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader-spinner {
+    animation: loaderSpin 1s linear infinite;
+}
+
+/* Анимация для обучения */
+.tutorial {
+    transition: opacity 0.3s ease;
+}
+
+.tutorial-step {
+    animation: stepAppear 0.5s ease forwards;
+}
+
+@keyframes stepAppear {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 } 

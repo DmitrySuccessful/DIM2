@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="src/css/style.css">
     <link rel="stylesheet" href="src/css/animations.css">
     <link rel="stylesheet" href="src/css/games.css">
+    <!-- GSAP для продвинутых анимаций -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script>
         // Скрипт для отслеживания загрузки
         window.addEventListener('error', function(e) {
@@ -22,6 +24,24 @@
         <p>Loading...</p>
     </div>
 
+    <!-- Tutorial Overlay -->
+    <div id="tutorial" class="tutorial hidden">
+        <div class="tutorial-content">
+            <h3>Добро пожаловать в Nitcoin Clicker!</h3>
+            <div class="tutorial-step" data-step="1">
+                <p>👆 Кликайте по монете, чтобы заработать Nitcoins</p>
+            </div>
+            <div class="tutorial-step" data-step="2">
+                <p>🎮 Играйте в мини-игры для дополнительного заработка</p>
+            </div>
+            <div class="tutorial-step" data-step="3">
+                <p>🏆 Выполняйте задания и получайте достижения</p>
+            </div>
+            <button class="tutorial-next">Далее</button>
+            <button class="tutorial-close">Пропустить</button>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div class="container">
         <!-- Header with Balance -->
@@ -35,16 +55,16 @@
 
         <!-- Navigation -->
         <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="main">Главная</button>
-            <button class="tab-btn" data-tab="tasks">Задания</button>
-            <button class="tab-btn" data-tab="games">Подработка</button>
-            <button class="tab-btn" data-tab="achievements">Достижения</button>
+            <button class="tab-btn active" data-tab="main" data-tooltip="Основной экран">Главная</button>
+            <button class="tab-btn" data-tab="tasks" data-tooltip="Выполняйте задания для наград">Задания</button>
+            <button class="tab-btn" data-tab="games" data-tooltip="Играйте и зарабатывайте">Подработка</button>
+            <button class="tab-btn" data-tab="achievements" data-tooltip="Ваши достижения">Достижения</button>
         </nav>
 
         <!-- Main Tab -->
         <section id="main" class="tab-content active">
             <div class="coin-container">
-                <div id="coin" class="coin">
+                <div id="coin" class="coin" data-tooltip="Нажмите, чтобы получить монеты!">
                     <img src="src/assets/images/coin.svg" alt="Nitcoin">
                 </div>
                 <div id="click-particles" class="particles"></div>
@@ -52,57 +72,33 @@
             <div id="stats" class="stats">
                 <p>Кликов: <span id="clicks">0</span></p>
                 <p>За клик: <span id="per-click">1</span></p>
+                <div class="multiplier-container">
+                    <div class="multiplier-progress">
+                        <div class="progress-bar">
+                            <div id="combo-progress" class="progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <p>Множитель: x<span id="multiplier">1</span></p>
+                </div>
             </div>
         </section>
 
         <!-- Tasks Tab -->
         <section id="tasks" class="tab-content">
-            <div class="tasks-list">
-                <div class="task" data-id="video" data-reward="100">
-                    <h3>Посмотри видео</h3>
-                    <p>Награда: 100 монет</p>
-                    <button class="task-btn">Выполнить</button>
-                </div>
-                <div class="task" data-id="share" data-reward="50">
-                    <h3>Поделись ссылкой</h3>
-                    <p>Награда: 50 монет</p>
-                    <button class="task-btn">Выполнить</button>
-                </div>
-                <div class="task" data-id="article" data-reward="75">
-                    <h3>Прочитай статью</h3>
-                    <p>Награда: 75 монет</p>
-                    <button class="task-btn">Выполнить</button>
-                </div>
-            </div>
+            <h2>Задания</h2>
+            <div id="tasks-container"></div>
         </section>
 
         <!-- Games Tab -->
         <section id="games" class="tab-content">
-            <div class="games-grid">
-                <div class="game-card" data-game="tictactoe">
-                    <h3>Крестики-нолики</h3>
-                    <p>Награда: 50 монет</p>
-                    <button class="game-btn">Играть</button>
-                </div>
-                <div class="game-card" data-game="sudoku">
-                    <h3>Судоку</h3>
-                    <p>Награда: 100 монет</p>
-                    <button class="game-btn">Играть</button>
-                </div>
-                <div class="game-card" data-game="crossword">
-                    <h3>Кроссворд</h3>
-                    <p>Награда: 75 монет</p>
-                    <button class="game-btn">Играть</button>
-                </div>
-            </div>
+            <h2>Мини-игры</h2>
+            <div id="games-container" class="games-grid"></div>
         </section>
 
         <!-- Achievements Tab -->
         <section id="achievements" class="tab-content">
-            <div class="achievements-list">
-                <h2>Достижения</h2>
-                <div id="achievements-list"></div>
-            </div>
+            <h2>Достижения</h2>
+            <div id="achievements-container"></div>
         </section>
     </div>
 
