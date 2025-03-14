@@ -2,10 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="MobileOptimized" content="176">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="robots" content="noindex,nofollow">
     <meta name="description" content="MyShop - Увлекательный симулятор управления интернет-магазином">
     <meta name="theme-color" content="#4CAF50">
     <title>MyShop - Симулятор Интернет-Магазина</title>
+    
+    <!-- Telegram Mini App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Стили -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -37,13 +47,13 @@
     <!-- Навигация -->
     <nav class="nav">
         <div class="container">
-            <ul class="nav-list">
-                <li><button class="nav-btn active" data-section="shop-section">Магазин</button></li>
-                <li><button class="nav-btn" data-section="marketing-section">Маркетинг</button></li>
-                <li><button class="nav-btn" data-section="staff-section">Персонал</button></li>
-                <li><button class="nav-btn" data-section="minigame-section">Мини-игра</button></li>
-                <li><button class="nav-btn" data-section="settings-section">Настройки</button></li>
-            </ul>
+            <div class="nav-list">
+                <button class="nav-btn active" data-section="shop-section">Магазин</button>
+                <button class="nav-btn" data-section="marketing-section">Маркетинг</button>
+                <button class="nav-btn" data-section="staff-section">Персонал</button>
+                <button class="nav-btn" data-section="minigame-section">Мини-игра</button>
+                <button class="nav-btn" data-section="settings-section">Настройки</button>
+            </div>
         </div>
     </nav>
 
@@ -79,12 +89,12 @@
                 <h2>Ловец Товаров</h2>
                 <div class="minigame-container">
                     <div class="minigame-instructions">
-                        <p>Используйте стрелки влево/вправо или касайтесь экрана для управления корзиной.</p>
+                        <p>Используйте касания экрана для управления корзиной.</p>
                         <p>Ловите падающие товары, чтобы заработать деньги!</p>
                         <ul>
-                            <li>🥉 Бронзовые товары: +10 монет</li>
-                            <li>🥈 Серебряные товары: +25 монет</li>
-                            <li>🥇 Золотые товары: +50 монет</li>
+                            <li>💰 Монеты: +10 монет</li>
+                            <li>⭐ Звезды: +50 монет</li>
+                            <li>🪨 Камни: -20 монет</li>
                         </ul>
                     </div>
                     <canvas id="minigame-canvas"></canvas>
@@ -107,19 +117,6 @@
         </div>
     </main>
 
-    <!-- Подвал -->
-    <footer class="footer">
-        <div class="container footer-content">
-            <div class="footer-copyright">
-                © 2024 MyShop
-            </div>
-            <div class="footer-links">
-                <a href="#" class="footer-link" id="help-link">Помощь</a>
-                <a href="#" class="footer-link" id="about-link">О проекте</a>
-            </div>
-        </div>
-    </footer>
-
     <!-- Загрузчик -->
     <div id="loading" class="loader">
         <!-- Спиннер добавляется через CSS -->
@@ -132,6 +129,10 @@
 
     <!-- Скрипты -->
     <script type="module">
+        // Инициализация Telegram Mini App
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+
         // Глобальная обработка ошибок
         window.onerror = function(msg, url, lineNo, columnNo, error) {
             console.error('Error:', {
@@ -147,30 +148,20 @@
             errorMessage.querySelector('p').textContent = 
                 'Произошла ошибка при загрузке игры. Пожалуйста, обновите страницу.';
             
-            // Скрываем загрузчик
             document.getElementById('loading').style.display = 'none';
-            
             return false;
         };
 
         // Импорт модулей
         try {
             const { CONFIG } = await import('./scripts/config.js');
-            const { GameState, Product, StaffMember } = await import('./scripts/models.js');
-            const { 
-                ProductService, 
-                StaffService, 
-                MarketingService, 
-                SaveService, 
-                ReferralService 
-            } = await import('./scripts/services.js');
+            const { GameState } = await import('./scripts/models.js');
             const { UI } = await import('./scripts/ui.js');
-            const { Minigame } = await import('./scripts/minigame.js');
             const { Game } = await import('./scripts/game.js');
 
             // Инициализация игры
             const game = new Game();
-            window.game = game; // Для отладки
+            window.game = game;
 
             // Скрываем загрузчик
             document.getElementById('loading').style.display = 'none';
