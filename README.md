@@ -1,36 +1,33 @@
 # Nitcoin Clicker
 
-A fun and engaging clicker game where you earn Nitcoins by clicking, completing tasks, and playing mini-games.
+A fun and engaging clicker game with multiple mini-games and achievements.
 
 ## Features
 
-- **Core Gameplay**
-  - Click to earn Nitcoins
-  - Animated coin with particle effects
-  - Auto-save progress
-  - Beautiful and responsive UI
-
-- **Tasks System**
-  - Multiple tasks to complete
-  - Progressive difficulty
-  - Rewards for completion
-  - Real-time progress tracking
-
-- **Mini-Games**
+- Click to earn Nitcoins
+- Multiple mini-games:
   - Tic Tac Toe
-    - Play against AI
-    - Win Nitcoins for victories
   - Sudoku
-    - Multiple difficulty levels
-    - Generated puzzles
-    - Rewards for completion
+  - More coming soon!
+- Achievement system
+- Task system
+- Beautiful animations and effects
 
-- **Achievements**
-  - Multiple achievement categories
-  - Progressive levels
-  - Special rewards
-  - Real-time tracking
-  - Achievement notifications
+## How to Play
+
+1. Visit [https://dmitrysuccessful.github.io/DIM2/](https://dmitrysuccessful.github.io/DIM2/)
+2. Click the coin to earn Nitcoins
+3. Complete tasks to earn more coins
+4. Play mini-games for additional rewards
+5. Unlock achievements as you progress
+
+## Technologies Used
+
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Custom animations
+- Responsive design
 
 ## Project Structure
 
