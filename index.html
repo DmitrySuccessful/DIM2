@@ -1,93 +1,36 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Магазин зомби-товаров</title>
-    <link rel="stylesheet" href="src/css/style.css">
-    <link rel="stylesheet" href="src/css/game.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <meta http-equiv="refresh" content="0;url=src/game.html">
+    <title>Redirecting to Doodle Jump</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #1a1a1a, #4a4a4a);
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <!-- Loader -->
-    <div class="loader">
-        <div class="loader-spinner"></div>
+    <div>
+        <h1>Redirecting to Doodle Jump...</h1>
+        <p>If you are not redirected automatically, <a href="src/game.html">click here</a>.</p>
     </div>
-
-    <!-- Header -->
-    <header>
-        <nav>
-            <div class="nav-links">
-                <a href="#shop">Магазин</a>
-                <a href="#game">Игра</a>
-                <a href="#profile">Профиль</a>
-            </div>
-            <div class="bonus-display">0 бонусов</div>
-            <button class="cart-button">Корзина (0)</button>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main>
-        <!-- Shop Section -->
-        <section id="shop" class="shop-section">
-            <div class="filters">
-                <select id="category-filter">
-                    <option value="all">Все категории</option>
-                    <option value="costumes">Костюмы</option>
-                    <option value="makeup">Грим</option>
-                    <option value="accessories">Аксессуары</option>
-                </select>
-                <select id="sort-filter">
-                    <option value="name">По названию</option>
-                    <option value="price-asc">По цене (возр.)</option>
-                    <option value="price-desc">По цене (убыв.)</option>
-                </select>
-            </div>
-            <div class="products-grid"></div>
-        </section>
-
-        <!-- Game Section -->
-        <section id="game" class="game-section">
-            <div class="game-container">
-                <div class="game-controls">
-                    <button id="start-game" class="game-button">Начать игру</button>
-                    <button id="pause-game" class="game-button" disabled>Пауза</button>
-                </div>
-                <div class="game-stats">
-                    <div class="stat-box">Счет: <span id="game-score">0</span></div>
-                    <div class="stat-box">Уровень: <span id="game-level">1</span></div>
-                    <div class="stat-box">Бонусы: <span id="game-bonus">0</span></div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Cart Modal -->
-    <div class="cart-modal">
-        <div class="cart-header">
-            <h2>Корзина</h2>
-            <button class="close-cart">&times;</button>
-        </div>
-        <div class="cart-items"></div>
-        <div class="cart-summary">
-            <div class="bonus-controls">
-                <input type="number" class="bonus-input" placeholder="Использовать бонусы">
-                <button class="apply-bonus">Применить</button>
-            </div>
-            <div class="cart-total">
-                <span>Итого:</span>
-                <span class="cart-total-amount">0 ₽</span>
-            </div>
-            <button class="checkout-btn" disabled>Оформить заказ</button>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="src/js/utils.js"></script>
-    <script src="src/js/state.js"></script>
-    <script src="src/js/cart.js"></script>
-    <script src="src/js/shop.js"></script>
-    <script src="src/js/game/main.js"></script>
 </body>
 </html> 
