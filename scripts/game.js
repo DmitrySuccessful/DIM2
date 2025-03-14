@@ -1,12 +1,12 @@
 import { CONFIG } from './config.js';
-import { GameState } from './models.js';
+import { GameState } from './game-state.js';
 import {
     ProductService,
     StaffService,
     MarketingService,
     SaveService,
     ReferralService
-} from './services.js';
+} from './services/index.js';
 import { UI } from './ui.js';
 import { Minigame } from './minigame.js';
 
@@ -19,24 +19,13 @@ export class Game {
         this.ui = ui;
         this.assetManager = assetManager;
         this.isRunning = false;
+        
         try {
-            // Инициализация состояния игры
-            this.gameState = new GameState();
-            
             // Инициализация сервисов
             this.initializeServices();
 
             // Загрузка сохраненного состояния
             this.loadGame();
-
-            // Инициализация UI
-            this.ui = new UI(this.gameState, this.services);
-
-            // Запуск игрового цикла
-            this.startGameLoop();
-
-            // Запуск автосохранения
-            this.startAutoSave();
 
             // Обработчики событий
             this.setupEventListeners();
@@ -383,9 +372,4 @@ export class Game {
             throw error;
         }
     }
-}
-
-// Инициализация игры при загрузке страницы
-window.addEventListener('DOMContentLoaded', () => {
-    window.game = new Game();
-}); 
+} 
