@@ -29,7 +29,7 @@
     border-radius: 8px;
     padding: 2rem;
     box-shadow: 0 2px 5px var(--shadow-color);
-    background-image: url('/DIM2/src/assets/images/game-bg.jpg');
+    background-image: url('DIM2/src/assets/images/game-bg.jpg');
     background-size: cover;
     background-position: center;
     min-height: 400px;

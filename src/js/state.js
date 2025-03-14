@@ -7,7 +7,7 @@ const State = (() => {
             name: 'Зомби-маска',
             description: 'Реалистичная маска зомби для косплея',
             price: 1500,
-            image: '/DIM2/src/assets/images/mask.jpg',
+            image: 'DIM2/src/assets/images/mask.jpg',
             category: 'costumes'
         },
         {
@@ -15,7 +15,7 @@ const State = (() => {
             name: 'Набор для грима',
             description: 'Профессиональный набор для создания образа зомби',
             price: 2500,
-            image: '/DIM2/src/assets/images/makeup.jpg',
+            image: 'DIM2/src/assets/images/makeup.jpg',
             category: 'makeup'
         },
         {
@@ -23,7 +23,7 @@ const State = (() => {
             name: 'Костюм зомби',
             description: 'Полный костюм зомби с рваной одеждой',
             price: 3500,
-            image: '/DIM2/src/assets/images/costume.jpg',
+            image: 'DIM2/src/assets/images/costume.jpg',
             category: 'costumes'
         },
         {
@@ -31,7 +31,7 @@ const State = (() => {
             name: 'Линзы зомби',
             description: 'Контактные линзы для создания эффекта глаз зомби',
             price: 1200,
-            image: '/DIM2/src/assets/images/lenses.jpg',
+            image: 'DIM2/src/assets/images/lenses.jpg',
             category: 'accessories'
         },
         {
@@ -39,7 +39,7 @@ const State = (() => {
             name: 'Искусственная кровь',
             description: 'Реалистичная искусственная кровь для грима',
             price: 800,
-            image: '/DIM2/src/assets/images/blood.jpg',
+            image: 'DIM2/src/assets/images/blood.jpg',
             category: 'makeup'
         },
         {
@@ -47,7 +47,7 @@ const State = (() => {
             name: 'Накладные раны',
             description: 'Набор накладных ран и шрамов',
             price: 1000,
-            image: '/DIM2/src/assets/images/wounds.jpg',
+            image: 'DIM2/src/assets/images/wounds.jpg',
             category: 'makeup'
         }
     ];
