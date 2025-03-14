@@ -3,120 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nitcoin Clicker</title>
+    <title>GameShop - Магазин с мини-игрой</title>
     <link rel="stylesheet" href="src/css/style.css">
-    <link rel="stylesheet" href="src/css/animations.css">
-    <link rel="stylesheet" href="src/css/games.css">
-    <!-- GSAP для продвинутых анимаций -->
+    <link rel="stylesheet" href="src/css/game.css">
+    <!-- GSAP для анимаций -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script>
-        // Скрипт для отслеживания загрузки
-        window.addEventListener('error', function(e) {
-            console.error('Loading error:', e);
-            document.getElementById('loader').innerHTML += `<p style="color: red">Error: ${e.message}</p>`;
-        });
-    </script>
 </head>
 <body>
     <!-- Loader -->
     <div id="loader" class="loader">
         <div class="loader-spinner"></div>
-        <p>Loading...</p>
+        <p>Загрузка...</p>
     </div>
 
-    <!-- Tutorial Overlay -->
-    <div id="tutorial" class="tutorial hidden">
-        <div class="tutorial-content">
-            <h3>Добро пожаловать в Nitcoin Clicker!</h3>
-            <div class="tutorial-step" data-step="1">
-                <p>👆 Кликайте по монете, чтобы заработать Nitcoins</p>
-            </div>
-            <div class="tutorial-step" data-step="2">
-                <p>🎮 Играйте в мини-игры для дополнительного заработка</p>
-            </div>
-            <div class="tutorial-step" data-step="3">
-                <p>🏆 Выполняйте задания и получайте достижения</p>
-            </div>
-            <button class="tutorial-next">Далее</button>
-            <button class="tutorial-close">Пропустить</button>
-        </div>
-    </div>
-
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Header with Balance -->
-        <header class="header">
-            <h1>Nitcoin Clicker</h1>
-            <div class="balance-container">
-                <span id="balance">0</span>
-                <button id="withdraw" class="withdraw-btn">Вывести</button>
-            </div>
-        </header>
-
-        <!-- Navigation -->
-        <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="main" data-tooltip="Основной экран">Главная</button>
-            <button class="tab-btn" data-tab="tasks" data-tooltip="Выполняйте задания для наград">Задания</button>
-            <button class="tab-btn" data-tab="games" data-tooltip="Играйте и зарабатывайте">Подработка</button>
-            <button class="tab-btn" data-tab="achievements" data-tooltip="Ваши достижения">Достижения</button>
-        </nav>
-
-        <!-- Main Tab -->
-        <section id="main" class="tab-content active">
-            <div class="coin-container">
-                <div id="coin" class="coin" data-tooltip="Нажмите, чтобы получить монеты!">
-                    <img src="src/assets/images/coin.svg" alt="Nitcoin">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">GameShop</a>
+                <nav class="nav">
+                    <a href="#shop" class="nav-link">Магазин</a>
+                    <a href="#game" class="nav-link">Игра</a>
+                    <a href="#profile" class="nav-link">Профиль</a>
+                </nav>
+                <div class="header-controls">
+                    <div class="bonus-display">
+                        <span>Бонусы: </span>
+                        <span id="bonus-amount">0</span>
+                    </div>
+                    <button id="cart-btn" class="cart-button">
+                        Корзина (<span id="cart-count">0</span>)
+                    </button>
                 </div>
-                <div id="click-particles" class="particles"></div>
             </div>
-            <div id="stats" class="stats">
-                <p>Кликов: <span id="clicks">0</span></p>
-                <p>За клик: <span id="per-click">1</span></p>
-                <div class="multiplier-container">
-                    <div class="multiplier-progress">
-                        <div class="progress-bar">
-                            <div id="combo-progress" class="progress" style="width: 0%"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Shop Section -->
+            <section id="shop" class="shop-section">
+                <h2>Каталог товаров</h2>
+                <div class="products-grid" id="products-container">
+                    <!-- Products will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Game Section -->
+            <section id="game" class="game-section">
+                <div class="game-container">
+                    <div class="game-header">
+                        <h2>Поймай зомби!</h2>
+                        <div class="game-stats">
+                            <span>Уровень: <span id="level">1</span></span>
+                            <span>Очки: <span id="score">0</span></span>
+                            <span>Бонусы: <span id="game-bonus">0</span></span>
                         </div>
                     </div>
-                    <p>Множитель: x<span id="multiplier">1</span></p>
+                    <div id="game-canvas" class="game-canvas">
+                        <!-- Game will be rendered here -->
+                    </div>
+                    <div class="game-controls">
+                        <button id="start-game" class="game-button">Начать игру</button>
+                        <button id="pause-game" class="game-button" disabled>Пауза</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Корзина</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="cart-items" class="cart-items">
+                    <!-- Cart items will be loaded here -->
+                </div>
+                <div class="cart-summary">
+                    <div class="cart-total">
+                        Итого: <span id="cart-total">0</span> ₽
+                    </div>
+                    <div class="cart-bonus">
+                        Доступно бонусов: <span id="available-bonus">0</span>
+                    </div>
                 </div>
             </div>
-        </section>
-
-        <!-- Tasks Tab -->
-        <section id="tasks" class="tab-content">
-            <h2>Задания</h2>
-            <div id="tasks-container"></div>
-        </section>
-
-        <!-- Games Tab -->
-        <section id="games" class="tab-content">
-            <h2>Мини-игры</h2>
-            <div id="games-container" class="games-grid"></div>
-        </section>
-
-        <!-- Achievements Tab -->
-        <section id="achievements" class="tab-content">
-            <h2>Достижения</h2>
-            <div id="achievements-container"></div>
-        </section>
-    </div>
-
-    <!-- Game Modals -->
-    <div id="game-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="game-container"></div>
+            <div class="modal-footer">
+                <button id="apply-bonus" class="button">Применить бонусы</button>
+                <button id="checkout" class="button primary">Оформить заказ</button>
+            </div>
         </div>
     </div>
 
+    <!-- Notification System -->
+    <div id="notification-container" class="notification-container"></div>
+
     <!-- Scripts -->
-    <script>
-        // Проверяем поддержку модулей
-        if (!'noModule' in HTMLScriptElement.prototype) {
-            document.getElementById('loader').innerHTML += '<p style="color: red">Error: Your browser does not support ES modules</p>';
-        }
-    </script>
-    <script type="module" src="src/js/main.js"></script>
+    <script type="module" src="src/js/shop.js"></script>
+    <script type="module" src="src/js/cart.js"></script>
+    <script type="module" src="src/js/game/main.js"></script>
 </body>
 </html> 
