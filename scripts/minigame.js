@@ -70,7 +70,7 @@ class MinigameManager {
             return URL.createObjectURL(blob);
         };
 
-        fetch('images/minigame.svg')
+        fetch('/MyShop/images/minigame.svg')
             .then(response => response.text())
             .then(svgText => {
                 const parser = new DOMParser();
