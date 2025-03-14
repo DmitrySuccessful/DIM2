@@ -20,7 +20,9 @@ const elements = {
     coin: document.getElementById('coin'),
     clicks: document.getElementById('clicks'),
     perClick: document.getElementById('per-click'),
-    particles: document.getElementById('click-particles')
+    particles: document.getElementById('click-particles'),
+    loader: document.getElementById('loader'),
+    container: document.querySelector('.container')
 };
 
 // Imports
@@ -29,18 +31,45 @@ import { initGames } from './games.js';
 import { initAchievements } from './achievements.js';
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    initGame();
-    setupEventListeners();
-    loadGameState();
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Скрываем контейнер на время загрузки
+        if (elements.container) {
+            elements.container.style.visibility = 'hidden';
+        }
+
+        // Инициализируем игру
+        await initGame();
+        
+        // Настраиваем обработчики событий
+        setupEventListeners();
+        
+        // Загружаем сохраненное состояние
+        loadGameState();
+        
+        // Показываем игру и скрываем loader
+        if (elements.loader) {
+            elements.loader.style.display = 'none';
+        }
+        if (elements.container) {
+            elements.container.style.visibility = 'visible';
+        }
+    } catch (error) {
+        console.error('Initialization error:', error);
+        if (elements.loader) {
+            elements.loader.innerHTML += `<p style="color: red">Error: ${error.message}</p>`;
+        }
+    }
 });
 
 // Initialize game
-function initGame() {
+async function initGame() {
     updateBalance();
-    initTasks();
-    initGames();
-    initAchievements();
+    await Promise.all([
+        initTasks(),
+        initGames(),
+        initAchievements()
+    ]);
     initParticles();
 }
 
