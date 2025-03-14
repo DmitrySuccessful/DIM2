@@ -1,21 +1,20 @@
 import { TicTacToe } from './games/tictactoe.js';
 import { Sudoku } from './games/sudoku.js';
-import { elements } from './main.js';
-import { checkTasks } from './tasks.js';
+import { state, updateBalance } from './main.js';
 
 // Game definitions
 const gameDefinitions = {
     tictactoe: {
         id: 'tictactoe',
-        title: 'Tic Tac Toe',
-        description: 'Classic game of X\'s and O\'s. Win to earn Nitcoins!',
+        title: 'Крестики-нолики',
+        description: 'Классическая игра. Победите компьютер!',
         reward: 50,
         class: TicTacToe
     },
     sudoku: {
         id: 'sudoku',
-        title: 'Sudoku',
-        description: 'Fill the grid with numbers. Complete the puzzle to earn Nitcoins!',
+        title: 'Судоку',
+        description: 'Заполните сетку числами',
         reward: 100,
         class: Sudoku
     }
@@ -26,31 +25,27 @@ let activeGame = null;
 
 // Initialize games
 export function initGames() {
-    renderGameList();
-    setupEventListeners();
-}
+    const gamesList = document.querySelector('.games-grid');
+    if (!gamesList) return;
 
-// Render game list
-function renderGameList() {
-    elements.gameList.innerHTML = '';
+    // Clear existing content
+    gamesList.innerHTML = '';
 
+    // Add game cards
     Object.values(gameDefinitions).forEach(game => {
-        const gameElement = document.createElement('div');
-        gameElement.className = 'game-item';
-        gameElement.innerHTML = `
+        const gameCard = document.createElement('div');
+        gameCard.className = 'game-card';
+        gameCard.innerHTML = `
             <h3>${game.title}</h3>
             <p>${game.description}</p>
-            <p class="game-reward">Reward: ${game.reward} Nitcoins</p>
-            <button class="game-btn primary" data-game="${game.id}">Play</button>
+            <p class="game-reward">Награда: ${game.reward} монет</p>
+            <button class="game-btn" data-game="${game.id}">Играть</button>
         `;
-
-        elements.gameList.appendChild(gameElement);
+        gamesList.appendChild(gameCard);
     });
-}
 
-// Setup event listeners
-function setupEventListeners() {
-    elements.gameList.addEventListener('click', (e) => {
+    // Setup event listeners
+    gamesList.addEventListener('click', (e) => {
         const playButton = e.target.closest('button[data-game]');
         if (playButton) {
             const gameId = playButton.dataset.game;
@@ -64,35 +59,41 @@ function startGame(gameId) {
     const gameDefinition = gameDefinitions[gameId];
     if (!gameDefinition) return;
 
-    // Clear game list
-    elements.gameList.innerHTML = '';
+    const modal = document.getElementById('game-modal');
+    const gameContainer = document.getElementById('game-container');
+    
+    if (!modal || !gameContainer) return;
 
-    // Create game container
-    const gameContainer = document.createElement('div');
-    gameContainer.id = `${gameId}-container`;
-    elements.gameList.appendChild(gameContainer);
+    // Clear game container
+    gameContainer.innerHTML = '';
 
-    // Initialize game
+    // Create game instance
     activeGame = new gameDefinition.class(gameContainer, (won) => {
-        // Game end callback
+        if (won) {
+            state.stats.gamesWon++;
+            state.balance += gameDefinition.reward;
+            updateBalance();
+        }
         setTimeout(() => {
-            endGame();
-            if (won) {
-                checkTasks();
-            }
+            modal.style.display = 'none';
         }, 2000);
     });
-}
 
-// End current game
-function endGame() {
-    activeGame = null;
-    renderGameList();
+    // Show modal
+    modal.style.display = 'flex';
+
+    // Setup close button
+    const closeBtn = modal.querySelector('.close');
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            modal.style.display = 'none';
+            activeGame = null;
+        };
+    }
 }
 
 // Export functions
 export {
     gameDefinitions,
-    startGame,
-    endGame
+    startGame
 }; 
