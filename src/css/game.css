@@ -1,10 +1,7 @@
 /* Game Section Styles */
 .game-section {
-    background: white;
     padding: 2rem;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    text-align: center;
+    background-color: var(--background-color);
 }
 
 .game-section.hidden {
@@ -13,10 +10,8 @@
 
 .game-stats {
     display: flex;
-    justify-content: center;
     gap: 2rem;
-    margin: 1rem 0;
-    font-size: 1.2rem;
+    margin-bottom: 2rem;
 }
 
 .game-stats div {
@@ -28,31 +23,29 @@
 
 /* Game Container */
 .game-container {
-    position: relative;
-    width: 100%;
-    height: 600px;
-    background: url('../assets/images/game-bg.jpg') no-repeat center center;
-    background-size: cover;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--card-background);
     border-radius: 8px;
-    overflow: hidden;
+    padding: 2rem;
     box-shadow: 0 2px 5px var(--shadow-color);
-    cursor: crosshair;
-    user-select: none;
+    background-image: url('/DIM2/src/assets/images/game-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 400px;
+    position: relative;
 }
 
 /* Game Controls */
 .game-controls {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
     display: flex;
     gap: 1rem;
-    z-index: 10;
+    margin-bottom: 1rem;
 }
 
 .game-button {
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-color);
+    padding: 0.8rem 1.5rem;
+    background-color: var(--accent-color);
     color: white;
     border: none;
     border-radius: 4px;
@@ -61,28 +54,18 @@
 }
 
 .game-button:hover {
-    background-color: #34495e;
+    background-color: #2980b9;
 }
 
 .game-button:disabled {
-    background-color: #95a5a6;
+    background-color: #bdc3c7;
     cursor: not-allowed;
 }
 
 /* Game Stats */
-.game-stats {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    gap: 1rem;
-    z-index: 10;
-}
-
 .stat-box {
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 0.5rem 1rem;
-    background-color: rgba(44, 62, 80, 0.8);
-    color: white;
     border-radius: 4px;
     font-weight: bold;
 }
@@ -92,14 +75,18 @@
     position: absolute;
     width: 60px;
     height: 60px;
-    background-size: contain;
-    background-repeat: no-repeat;
     cursor: pointer;
     transition: transform 0.3s;
 }
 
 .zombie:hover {
     transform: scale(1.1);
+}
+
+.zombie img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .zombie.caught {
@@ -123,22 +110,21 @@
 /* Score Popup */
 .score-popup {
     position: absolute;
-    color: #f1c40f;
-    font-size: 1.2rem;
+    color: var(--secondary-color);
     font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-size: 1.2rem;
     pointer-events: none;
-    animation: float-up 0.5s ease-out forwards;
+    animation: floatUp 1s ease-out forwards;
 }
 
-@keyframes float-up {
+@keyframes floatUp {
     0% {
-        transform: translateY(0);
         opacity: 1;
+        transform: translateY(0);
     }
     100% {
-        transform: translateY(-50px);
         opacity: 0;
+        transform: translateY(-50px);
     }
 }
 
@@ -154,11 +140,8 @@
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 3rem;
+    font-size: 2rem;
     font-weight: bold;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
 }
 
 .pause-overlay.active {
@@ -168,101 +151,48 @@
 /* Game Over Screen */
 .game-over {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     color: white;
-    font-size: 2rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-}
-
-.game-over.active {
-    opacity: 1;
-    pointer-events: auto;
 }
 
 .game-over h2 {
+    font-size: 2.5rem;
     margin-bottom: 1rem;
 }
 
 .game-over p {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin-bottom: 2rem;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .game-container {
-        height: 400px;
+        margin: 0 1rem;
+        min-height: 300px;
     }
 
-    .game-controls,
     .game-stats {
         flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .game-button {
-        padding: 0.3rem 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .stat-box {
-        padding: 0.3rem 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .zombie {
-        width: 50px;
-        height: 50px;
-    }
-
-    .score-popup {
-        font-size: 1rem;
-    }
-
-    .pause-overlay {
-        font-size: 2rem;
-    }
-
-    .game-over {
-        font-size: 1.5rem;
-    }
-
-    .game-over p {
-        font-size: 1.2rem;
+        gap: 1rem;
     }
 }
 
 @media (max-width: 480px) {
-    .game-container {
-        height: 300px;
+    .game-controls {
+        flex-direction: column;
     }
 
-    .zombie {
-        width: 40px;
-        height: 40px;
-    }
-
-    .game-button,
-    .stat-box {
-        font-size: 0.8rem;
-    }
-
-    .pause-overlay {
-        font-size: 1.5rem;
-    }
-
-    .game-over {
-        font-size: 1.2rem;
-    }
-
-    .game-over p {
-        font-size: 1rem;
+    .game-button {
+        width: 100%;
     }
 }
 
