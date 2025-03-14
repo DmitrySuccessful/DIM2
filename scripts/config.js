@@ -180,5 +180,31 @@ export const CONFIG = Object.freeze({
     REFERRAL: Object.freeze({
         bonus: 100,
         commission: 0.1
+    }),
+
+    // AI Generation settings
+    AI_GENERATION: Object.freeze({
+        enabled: true,
+        apiKey: '', // Ключ API нужно будет получить от пользователя
+        defaultStyle: "pixel-art",
+        cacheEnabled: true,
+        regenerationCooldown: 3600000, // 1 час в миллисекундах
+        prompts: {
+            products: {
+                smartphone: "modern sleek smartphone with glowing screen, minimalist design",
+                laptop: "professional laptop computer with illuminated keyboard",
+                tshirt: "trendy casual t-shirt with modern design",
+                jeans: "classic blue denim jeans, fashionable cut"
+            },
+            staff: {
+                salesman: "friendly professional salesperson in business casual attire",
+                manager: "confident business manager in formal suit"
+            },
+            animations: {
+                reward: "sparkling golden coins and stars explosion effect",
+                purchase: "shopping bag with sparkles and checkmark",
+                levelUp: "colorful level up celebration effect"
+            }
+        }
     })
 }); 

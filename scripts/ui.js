@@ -24,9 +24,113 @@ export class UI {
             this.renderStaff();
             this.renderMarketing();
             this.setupMinigame();
+
+            // Добавляем настройки AI в секцию настроек
+            const settingsContainer = document.querySelector('.settings-container');
+            if (settingsContainer) {
+                const aiSettings = document.createElement('div');
+                aiSettings.className = 'ai-settings';
+                aiSettings.innerHTML = `
+                    <h3>Настройки AI-генерации</h3>
+                    <div class="setting-group">
+                        <label for="ai-api-key">API Ключ:</label>
+                        <input type="password" id="ai-api-key" placeholder="Введите ваш API ключ">
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="ai-enabled" ${CONFIG.AI_GENERATION.enabled ? 'checked' : ''}>
+                            Включить AI-генерацию
+                        </label>
+                    </div>
+                    <button id="regenerate-assets" class="secondary-btn">Перегенерировать ассеты</button>
+                `;
+                settingsContainer.insertBefore(aiSettings, settingsContainer.firstChild);
+
+                // Обработчики событий
+                const apiKeyInput = document.getElementById('ai-api-key');
+                const aiEnabledCheckbox = document.getElementById('ai-enabled');
+                const regenerateButton = document.getElementById('regenerate-assets');
+
+                apiKeyInput.value = localStorage.getItem('ai-api-key') || '';
+                apiKeyInput.addEventListener('change', () => {
+                    localStorage.setItem('ai-api-key', apiKeyInput.value);
+                    this.initializeAssetManager();
+                });
+
+                aiEnabledCheckbox.addEventListener('change', () => {
+                    CONFIG.AI_GENERATION.enabled = aiEnabledCheckbox.checked;
+                    localStorage.setItem('ai-enabled', aiEnabledCheckbox.checked);
+                });
+
+                regenerateButton.addEventListener('click', async () => {
+                    if (!this.assetManager) {
+                        alert('Пожалуйста, введите API ключ');
+                        return;
+                    }
+                    
+                    regenerateButton.disabled = true;
+                    regenerateButton.textContent = 'Генерация...';
+                    
+                    try {
+                        await this.regenerateAllAssets();
+                        alert('Ассеты успешно перегенерированы!');
+                    } catch (error) {
+                        console.error('Failed to regenerate assets:', error);
+                        alert('Ошибка при генерации ассетов. Проверьте консоль для деталей.');
+                    } finally {
+                        regenerateButton.disabled = false;
+                        regenerateButton.textContent = 'Перегенерировать ассеты';
+                    }
+                });
+            }
+
+            this.initializeAssetManager();
         } catch (error) {
             console.error('Failed to initialize UI:', error);
             this.showError('Ошибка инициализации интерфейса');
+        }
+    }
+
+    async initializeAssetManager() {
+        const apiKey = localStorage.getItem('ai-api-key');
+        if (apiKey && CONFIG.AI_GENERATION.enabled) {
+            const { AssetManager } = await import('./services/AssetManager.js');
+            this.assetManager = new AssetManager(apiKey);
+            this.assetManager.loadCache();
+            
+            // Автоматически сохраняем кэш перед закрытием
+            window.addEventListener('beforeunload', () => {
+                this.assetManager.saveCache();
+            });
+        }
+    }
+
+    async regenerateAllAssets() {
+        if (!this.assetManager) return;
+
+        // Перегенерируем изображения продуктов
+        for (const product of CONFIG.PRODUCTS) {
+            const image = await this.assetManager.generateProductImage(product);
+            const productElement = document.querySelector(`[data-product-id="${product.id}"] img`);
+            if (productElement) {
+                productElement.src = `data:image/png;base64,${image}`;
+            }
+        }
+
+        // Перегенерируем аватары персонала
+        for (const staff of CONFIG.STAFF) {
+            const avatar = await this.assetManager.generateStaffAvatar(staff);
+            const staffElement = document.querySelector(`[data-staff-id="${staff.id}"] img`);
+            if (staffElement) {
+                staffElement.src = `data:image/png;base64,${avatar}`;
+            }
+        }
+
+        // Перегенерируем анимации
+        const rewardAnimation = await this.assetManager.generateRewardAnimation();
+        if (rewardAnimation) {
+            // Сохраняем анимацию для использования в игре
+            this.gameState.animations.reward = rewardAnimation;
         }
     }
 

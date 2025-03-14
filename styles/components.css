@@ -450,4 +450,64 @@
     .minigame-instructions li::before {
         color: var(--primary-light);
     }
+}
+
+/* AI Settings */
+.ai-settings {
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.ai-settings h3 {
+    margin: 0 0 15px;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.setting-group {
+    margin-bottom: 15px;
+}
+
+.setting-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-color);
+}
+
+.setting-group input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--background-color);
+    color: var(--text-color);
+}
+
+.setting-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+#regenerate-assets {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#regenerate-assets:disabled {
+    background: var(--disabled-color);
+    cursor: not-allowed;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+    .ai-settings {
+        background: var(--surface-color-light);
+    }
+
+    .setting-group input[type="password"] {
+        background: var(--surface-color);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
 } 

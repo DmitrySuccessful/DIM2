@@ -14,7 +14,11 @@ import { Minigame } from './minigame.js';
  * Основной класс игры
  */
 export class Game {
-    constructor() {
+    constructor(gameState, ui, assetManager) {
+        this.gameState = gameState;
+        this.ui = ui;
+        this.assetManager = assetManager;
+        this.isRunning = false;
         try {
             // Инициализация состояния игры
             this.gameState = new GameState();
@@ -287,6 +291,96 @@ export class Game {
             this.save();
         } catch (error) {
             console.error('Failed to dispose game:', error);
+        }
+    }
+
+    async start() {
+        try {
+            this.isRunning = true;
+            
+            // Load saved game state
+            await this.gameState.load();
+            
+            // Generate or load assets if AI is enabled
+            if (this.assetManager) {
+                await this.generateInitialAssets();
+            }
+            
+            // Initialize UI with current state
+            await this.ui.initialize(this.gameState);
+            
+            // Start game loop
+            this.gameLoop();
+            
+        } catch (error) {
+            console.error('Failed to start game:', error);
+            throw error;
+        }
+    }
+
+    async generateInitialAssets() {
+        try {
+            // Generate product images
+            for (const product of CONFIG.PRODUCTS) {
+                if (!this.assetManager.hasAsset(product.id)) {
+                    await this.assetManager.generateProductImage(product);
+                }
+            }
+
+            // Generate staff avatars
+            for (const staff of CONFIG.STAFF) {
+                if (!this.assetManager.hasAsset(staff.id)) {
+                    await this.assetManager.generateStaffAvatar(staff);
+                }
+            }
+
+            // Generate reward animations
+            if (!this.assetManager.hasAnimation('reward')) {
+                await this.assetManager.generateRewardAnimation();
+            }
+
+        } catch (error) {
+            console.warn('Failed to generate some assets:', error);
+            // Continue game execution with placeholder assets
+        }
+    }
+
+    gameLoop() {
+        if (!this.isRunning) return;
+
+        // Update game state
+        this.gameState.update();
+        
+        // Update UI
+        this.ui.update(this.gameState);
+
+        // Schedule next frame
+        requestAnimationFrame(() => this.gameLoop());
+    }
+
+    stop() {
+        this.isRunning = false;
+        if (this.assetManager) {
+            this.assetManager.saveCache();
+        }
+    }
+
+    async regenerateAssets() {
+        if (!this.assetManager) return;
+        
+        try {
+            // Clear existing cache
+            this.assetManager.clearCache();
+            
+            // Regenerate all assets
+            await this.generateInitialAssets();
+            
+            // Update UI with new assets
+            await this.ui.refreshAssets();
+            
+        } catch (error) {
+            console.error('Failed to regenerate assets:', error);
+            throw error;
         }
     }
 }

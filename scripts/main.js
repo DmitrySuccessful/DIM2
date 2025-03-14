@@ -1,46 +1,63 @@
 // Импорт всех необходимых модулей
 import { CONFIG } from './config.js';
-import { GameState, Product, StaffMember } from './models.js';
-import { ProductService, StaffService, MarketingService, SaveService, ReferralService } from './services.js';
+import { GameState } from './game-state.js';
 import { UI } from './ui.js';
-import { Minigame } from './minigame.js';
 import { Game } from './game.js';
+import { AssetManager } from './services/AssetManager.js';
 
 class App {
     constructor() {
-        this.init();
+        this.telegram = window.Telegram.WebApp;
+        this.game = null;
+        this.assetManager = null;
     }
 
     async init() {
         try {
-            // Инициализация Telegram Mini App
-            if (window.Telegram?.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
+            // Initialize Telegram Mini App
+            this.telegram.ready();
+            this.telegram.expand();
+
+            // Load saved API key and AI settings
+            const apiKey = localStorage.getItem('ai_api_key') || '';
+            const aiEnabled = localStorage.getItem('ai_enabled') === 'true';
+            
+            // Initialize AssetManager if AI is enabled
+            if (aiEnabled && apiKey) {
+                CONFIG.AI_GENERATION.enabled = true;
+                CONFIG.AI_GENERATION.apiKey = apiKey;
+                this.assetManager = new AssetManager(CONFIG.AI_GENERATION);
+                await this.assetManager.loadCache();
             }
 
-            // Инициализация основных компонентов
-            this.gameState = new GameState(CONFIG);
-            this.ui = new UI(this.gameState);
-            this.game = new Game(this.gameState, this.ui);
-
-            // Делаем игру доступной глобально для мини-игры
+            // Initialize game components
+            const gameState = new GameState();
+            const ui = new UI(this.assetManager);
+            this.game = new Game(gameState, ui, this.assetManager);
             window.game = this.game;
 
-            // Скрываем загрузчик
-            document.getElementById('loading').style.display = 'none';
+            // Start the game
+            await this.game.start();
+            document.getElementById('loader').style.display = 'none';
+
         } catch (error) {
             console.error('Failed to initialize app:', error);
-            const errorMessage = document.getElementById('error-message');
-            errorMessage.style.display = 'block';
-            errorMessage.querySelector('p').textContent = 
-                'Не удалось инициализировать приложение. Пожалуйста, обновите страницу.';
-            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-message').textContent = 'Failed to initialize app: ' + error.message;
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
         }
     }
 }
 
-// Инициализация приложения при загрузке страницы
+// Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new App();
+    const app = new App();
+    app.init();
+
+    // Save cache before unload if AI is enabled
+    window.addEventListener('beforeunload', () => {
+        if (app.assetManager) {
+            app.assetManager.saveCache();
+        }
+    });
 }); 
