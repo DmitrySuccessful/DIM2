@@ -3,109 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameShop - Магазин с мини-игрой</title>
+    <title>Магазин зомби-товаров</title>
     <link rel="stylesheet" href="src/css/style.css">
     <link rel="stylesheet" href="src/css/game.css">
-    <!-- GSAP для анимаций -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 </head>
 <body>
     <!-- Loader -->
-    <div id="loader" class="loader">
+    <div class="loader">
         <div class="loader-spinner"></div>
-        <p>Загрузка...</p>
     </div>
 
     <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <a href="/" class="logo">GameShop</a>
-                <nav class="nav">
-                    <a href="#shop" class="nav-link">Магазин</a>
-                    <a href="#game" class="nav-link">Игра</a>
-                    <a href="#profile" class="nav-link">Профиль</a>
-                </nav>
-                <div class="header-controls">
-                    <div class="bonus-display">
-                        <span>Бонусы: </span>
-                        <span id="bonus-amount">0</span>
-                    </div>
-                    <button id="cart-btn" class="cart-button">
-                        Корзина (<span id="cart-count">0</span>)
-                    </button>
-                </div>
+    <header>
+        <nav>
+            <div class="nav-links">
+                <a href="#shop">Магазин</a>
+                <a href="#game">Игра</a>
+                <a href="#profile">Профиль</a>
             </div>
-        </div>
+            <div class="bonus-display">0 бонусов</div>
+            <button class="cart-button">Корзина (0)</button>
+        </nav>
     </header>
 
     <!-- Main Content -->
-    <main class="main">
-        <div class="container">
-            <!-- Shop Section -->
-            <section id="shop" class="shop-section">
-                <h2>Каталог товаров</h2>
-                <div class="products-grid" id="products-container">
-                    <!-- Products will be loaded here -->
-                </div>
-            </section>
+    <main>
+        <!-- Shop Section -->
+        <section id="shop" class="shop-section">
+            <div class="filters">
+                <select id="category-filter">
+                    <option value="all">Все категории</option>
+                    <option value="costumes">Костюмы</option>
+                    <option value="makeup">Грим</option>
+                    <option value="accessories">Аксессуары</option>
+                </select>
+                <select id="sort-filter">
+                    <option value="name">По названию</option>
+                    <option value="price-asc">По цене (возр.)</option>
+                    <option value="price-desc">По цене (убыв.)</option>
+                </select>
+            </div>
+            <div class="products-grid"></div>
+        </section>
 
-            <!-- Game Section -->
-            <section id="game" class="game-section">
-                <div class="game-container">
-                    <div class="game-header">
-                        <h2>Поймай зомби!</h2>
-                        <div class="game-stats">
-                            <span>Уровень: <span id="level">1</span></span>
-                            <span>Очки: <span id="score">0</span></span>
-                            <span>Бонусы: <span id="game-bonus">0</span></span>
-                        </div>
-                    </div>
-                    <div id="game-canvas" class="game-canvas">
-                        <!-- Game will be rendered here -->
-                    </div>
-                    <div class="game-controls">
-                        <button id="start-game" class="game-button">Начать игру</button>
-                        <button id="pause-game" class="game-button" disabled>Пауза</button>
-                    </div>
+        <!-- Game Section -->
+        <section id="game" class="game-section">
+            <div class="game-container">
+                <div class="game-controls">
+                    <button id="start-game" class="game-button">Начать игру</button>
+                    <button id="pause-game" class="game-button" disabled>Пауза</button>
                 </div>
-            </section>
-        </div>
+                <div class="game-stats">
+                    <div class="stat-box">Счет: <span id="game-score">0</span></div>
+                    <div class="stat-box">Уровень: <span id="game-level">1</span></div>
+                    <div class="stat-box">Бонусы: <span id="game-bonus">0</span></div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Cart Modal -->
-    <div id="cart-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Корзина</h3>
-                <button class="close-modal">&times;</button>
+    <div class="cart-modal">
+        <div class="cart-header">
+            <h2>Корзина</h2>
+            <button class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items"></div>
+        <div class="cart-summary">
+            <div class="bonus-controls">
+                <input type="number" class="bonus-input" placeholder="Использовать бонусы">
+                <button class="apply-bonus">Применить</button>
             </div>
-            <div class="modal-body">
-                <div id="cart-items" class="cart-items">
-                    <!-- Cart items will be loaded here -->
-                </div>
-                <div class="cart-summary">
-                    <div class="cart-total">
-                        Итого: <span id="cart-total">0</span> ₽
-                    </div>
-                    <div class="cart-bonus">
-                        Доступно бонусов: <span id="available-bonus">0</span>
-                    </div>
-                </div>
+            <div class="cart-total">
+                <span>Итого:</span>
+                <span class="cart-total-amount">0 ₽</span>
             </div>
-            <div class="modal-footer">
-                <button id="apply-bonus" class="button">Применить бонусы</button>
-                <button id="checkout" class="button primary">Оформить заказ</button>
-            </div>
+            <button class="checkout-btn" disabled>Оформить заказ</button>
         </div>
     </div>
 
-    <!-- Notification System -->
-    <div id="notification-container" class="notification-container"></div>
-
     <!-- Scripts -->
-    <script type="module" src="src/js/shop.js"></script>
-    <script type="module" src="src/js/cart.js"></script>
-    <script type="module" src="src/js/game/main.js"></script>
+    <script src="src/js/utils.js"></script>
+    <script src="src/js/state.js"></script>
+    <script src="src/js/cart.js"></script>
+    <script src="src/js/shop.js"></script>
+    <script src="src/js/game/main.js"></script>
 </body>
 </html> 

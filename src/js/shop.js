@@ -1,6 +1,7 @@
 // Импорт зависимостей
 import { state, updateState } from './state.js';
 import { showNotification } from './utils.js';
+import gsap from 'gsap';
 
 // Данные о продуктах
 const products = [
@@ -206,6 +207,144 @@ class ShopManager {
         this.updateCartCount();
     }
 }
+
+// Shop Module
+(() => {
+    // DOM Elements
+    const productsGrid = document.querySelector('.products-grid');
+    const categoryFilter = document.querySelector('#category-filter');
+    const sortFilter = document.querySelector('#sort-filter');
+    const bonusDisplay = document.querySelector('.bonus-display');
+
+    // Render single product
+    const renderProduct = (product) => {
+        const productElement = document.createElement('div');
+        productElement.className = 'product-card';
+        productElement.innerHTML = `
+            <img src="${product.image}" alt="${product.name}" class="product-image">
+            <div class="product-info">
+                <h3 class="product-title">${product.name}</h3>
+                <p class="product-description">${product.description}</p>
+                <div class="product-price">${utils.formatPrice(product.price)}</div>
+                <button class="add-to-cart">В корзину</button>
+            </div>
+        `;
+
+        // Add hover animation
+        productElement.addEventListener('mouseenter', () => {
+            gsap.to(productElement, {
+                y: -5,
+                boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+                duration: 0.3
+            });
+        });
+
+        productElement.addEventListener('mouseleave', () => {
+            gsap.to(productElement, {
+                y: 0,
+                boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                duration: 0.3
+            });
+        });
+
+        // Add to cart handler
+        const addButton = productElement.querySelector('.add-to-cart');
+        addButton.addEventListener('click', () => {
+            State.addToCart(product);
+            utils.playSound('src/assets/sounds/add.mp3', 0.4);
+            
+            // Add button animation
+            gsap.to(addButton, {
+                scale: 1.1,
+                duration: 0.1,
+                yoyo: true,
+                repeat: 1
+            });
+
+            // Show notification
+            utils.showNotification(`${product.name} добавлен в корзину`);
+        });
+
+        return productElement;
+    };
+
+    // Render all products
+    const renderProducts = () => {
+        // Clear current products
+        productsGrid.innerHTML = '';
+
+        // Get filtered and sorted products
+        let products = State.getFilteredProducts(categoryFilter.value);
+        
+        // Sort products
+        switch (sortFilter.value) {
+            case 'price-asc':
+                products.sort((a, b) => a.price - b.price);
+                break;
+            case 'price-desc':
+                products.sort((a, b) => b.price - a.price);
+                break;
+            case 'name':
+                products.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+        }
+
+        // Add products with animation
+        products.forEach((product, index) => {
+            const productElement = renderProduct(product);
+            productsGrid.appendChild(productElement);
+
+            // Stagger animation
+            gsap.from(productElement, {
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                delay: index * 0.1
+            });
+        });
+    };
+
+    // Update bonus display
+    const updateBonusDisplay = () => {
+        bonusDisplay.textContent = `${State.bonusPoints} бонусов`;
+
+        // Add animation if bonus changes
+        gsap.from(bonusDisplay, {
+            scale: 1.2,
+            duration: 0.3,
+            ease: 'back.out'
+        });
+    };
+
+    // Initialize shop
+    const initShop = () => {
+        // Add event listeners
+        categoryFilter.addEventListener('change', renderProducts);
+        sortFilter.addEventListener('change', renderProducts);
+
+        // Subscribe to state changes
+        State.addListener(() => {
+            renderProducts();
+            updateBonusDisplay();
+        });
+
+        // Initial render
+        renderProducts();
+        updateBonusDisplay();
+
+        // Welcome notification
+        setTimeout(() => {
+            utils.showNotification('Добро пожаловать в магазин!');
+        }, 1000);
+    };
+
+    // Initialize when DOM is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initShop);
+    } else {
+        initShop();
+    }
+})();
 
 // Инициализация магазина после загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {

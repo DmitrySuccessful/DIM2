@@ -139,4 +139,380 @@ export const checkAudioSupport = () => {
     } catch (error) {
         return false;
     }
-}; 
+};
+
+// Utility Functions
+
+// Format price with currency
+const formatPrice = (price) => {
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 0
+    }).format(price);
+};
+
+// Generate random number between min and max
+const random = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+// Generate unique ID
+const generateId = () => {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
+
+// Show notification
+const showNotification = (message, type = 'info') => {
+    const notification = document.getElementById('notification');
+    const messageElement = document.getElementById('notification-message');
+
+    // Set message and type
+    messageElement.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.classList.remove('hidden');
+
+    // Animate with GSAP
+    gsap.fromTo(notification,
+        { x: 100, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }
+    );
+
+    // Hide after 3 seconds
+    setTimeout(() => {
+        gsap.to(notification, {
+            x: 100,
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power2.in',
+            onComplete: () => {
+                notification.classList.add('hidden');
+            }
+        });
+    }, 3000);
+};
+
+// Debounce function
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
+
+// Throttle function
+const throttle = (func, limit) => {
+    let inThrottle;
+    return function executedFunction(...args) {
+        if (!inThrottle) {
+            func(...args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+};
+
+// Load image promise
+const loadImage = (src) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+    });
+};
+
+// Play sound with Web Audio API
+const playSound = (() => {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const soundCache = new Map();
+
+    return async (soundUrl, volume = 1) => {
+        try {
+            let buffer = soundCache.get(soundUrl);
+            
+            if (!buffer) {
+                const response = await fetch(soundUrl);
+                const arrayBuffer = await response.arrayBuffer();
+                buffer = await audioContext.decodeAudioData(arrayBuffer);
+                soundCache.set(soundUrl, buffer);
+            }
+
+            const source = audioContext.createBufferSource();
+            const gainNode = audioContext.createGain();
+            
+            source.buffer = buffer;
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            gainNode.gain.value = volume;
+            
+            source.start(0);
+            return source;
+        } catch (error) {
+            console.error('Error playing sound:', error);
+        }
+    };
+})();
+
+// Animate element with GSAP
+const animate = {
+    fadeIn: (element, duration = 0.3) => {
+        gsap.fromTo(element,
+            { opacity: 0 },
+            { opacity: 1, duration, ease: 'power2.out' }
+        );
+    },
+
+    fadeOut: (element, duration = 0.3) => {
+        return gsap.fromTo(element,
+            { opacity: 1 },
+            { opacity: 0, duration, ease: 'power2.in' }
+        );
+    },
+
+    slideIn: (element, direction = 'right', duration = 0.3) => {
+        const x = direction === 'right' ? 100 : direction === 'left' ? -100 : 0;
+        const y = direction === 'down' ? 100 : direction === 'up' ? -100 : 0;
+
+        gsap.fromTo(element,
+            { x, y, opacity: 0 },
+            { x: 0, y: 0, opacity: 1, duration, ease: 'power2.out' }
+        );
+    },
+
+    bounce: (element, scale = 1.2, duration = 0.3) => {
+        gsap.fromTo(element,
+            { scale: 1 },
+            {
+                scale,
+                duration: duration / 2,
+                ease: 'power2.out',
+                yoyo: true,
+                repeat: 1
+            }
+        );
+    },
+
+    shake: (element, intensity = 5, duration = 0.5) => {
+        gsap.to(element, {
+            x: `random(-${intensity}, ${intensity})`,
+            y: `random(-${intensity}, ${intensity})`,
+            duration: 0.1,
+            repeat: duration * 10,
+            ease: 'none',
+            onComplete: () => gsap.set(element, { x: 0, y: 0 })
+        });
+    }
+};
+
+// Export utilities
+window.utils = {
+    formatPrice,
+    random,
+    generateId,
+    showNotification,
+    debounce,
+    throttle,
+    loadImage,
+    playSound,
+    animate
+};
+
+// Utilities Module
+const utils = (() => {
+    // Format price with Russian Ruble
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('ru-RU', {
+            style: 'currency',
+            currency: 'RUB'
+        }).format(price);
+    };
+
+    // Generate random number between min and max
+    const random = (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    // Generate unique ID
+    const generateId = () => {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    };
+
+    // Show notification
+    const showNotification = (message, type = 'success') => {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        // Animate notification
+        gsap.fromTo(notification,
+            {
+                opacity: 0,
+                x: 100
+            },
+            {
+                opacity: 1,
+                x: 0,
+                duration: 0.3,
+                ease: 'power2.out'
+            }
+        );
+
+        // Remove notification after delay
+        setTimeout(() => {
+            gsap.to(notification, {
+                opacity: 0,
+                x: 100,
+                duration: 0.3,
+                ease: 'power2.in',
+                onComplete: () => notification.remove()
+            });
+        }, 3000);
+    };
+
+    // Debounce function
+    const debounce = (func, wait) => {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    };
+
+    // Throttle function
+    const throttle = (func, limit) => {
+        let inThrottle;
+        return function executedFunction(...args) {
+            if (!inThrottle) {
+                func(...args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    };
+
+    // Load image and return promise
+    const loadImage = (src) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+    };
+
+    // Audio context and cache
+    let audioContext;
+    const audioCache = new Map();
+
+    // Play sound with volume control
+    const playSound = async (src, volume = 1) => {
+        try {
+            // Initialize audio context on first use
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // Check cache first
+            let buffer = audioCache.get(src);
+
+            if (!buffer) {
+                // Load and decode audio file
+                const response = await fetch(src);
+                const arrayBuffer = await response.arrayBuffer();
+                buffer = await audioContext.decodeAudioData(arrayBuffer);
+                audioCache.set(src, buffer);
+            }
+
+            // Create and configure source
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+
+            // Create and configure gain node
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = volume;
+
+            // Connect nodes
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // Play sound
+            source.start(0);
+        } catch (error) {
+            console.error('Error playing sound:', error);
+        }
+    };
+
+    // Animation utilities
+    const animate = {
+        fadeIn: (element, duration = 0.3) => {
+            gsap.fromTo(element,
+                { opacity: 0 },
+                { opacity: 1, duration, ease: 'power2.out' }
+            );
+        },
+
+        fadeOut: (element, duration = 0.3) => {
+            gsap.to(element, {
+                opacity: 0,
+                duration,
+                ease: 'power2.in'
+            });
+        },
+
+        slideIn: (element, direction = 'right', duration = 0.5) => {
+            const x = direction === 'right' ? 100 : -100;
+            gsap.fromTo(element,
+                { x, opacity: 0 },
+                { x: 0, opacity: 1, duration, ease: 'power2.out' }
+            );
+        },
+
+        bounce: (element, scale = 1.2, duration = 0.3) => {
+            gsap.to(element, {
+                scale,
+                duration: duration / 2,
+                ease: 'power2.out',
+                yoyo: true,
+                repeat: 1
+            });
+        },
+
+        shake: (element, intensity = 5, duration = 0.5) => {
+            gsap.to(element, {
+                x: `random(-${intensity}, ${intensity})`,
+                y: `random(-${intensity}, ${intensity})`,
+                duration: 0.1,
+                repeat: Math.floor(duration / 0.1),
+                ease: 'none',
+                yoyo: true
+            });
+        }
+    };
+
+    // Export utilities
+    return {
+        formatPrice,
+        random,
+        generateId,
+        showNotification,
+        debounce,
+        throttle,
+        loadImage,
+        playSound,
+        animate
+    };
+})();
+
+// Make utils available globally
+window.utils = utils; 
