@@ -1,76 +1,88 @@
-# MyShop - Магазин зомби-товаров с мини-игрой
+# Telegram Assistant for Product Business
 
-Интерактивный онлайн-магазин товаров для косплея зомби с встроенной мини-игрой для заработка бонусов.
+This Python-based assistant automatically generates topics for posts about product business, writes the posts, and schedules them for publication in your Telegram channel using OpenAI.
 
-## Особенности
+## Features
 
-- Каталог товаров с фильтрацией и сортировкой
-- Корзина с возможностью применения бонусов
-- Мини-игра "Поймай зомби" для заработка бонусов
-- Анимации и звуковые эффекты
-- Адаптивный дизайн
-- Сохранение прогресса в localStorage
+- 🚀 Automatically generates 10 unique topics for product business posts using OpenAI
+- ✍️ Creates engaging posts (100-150 words) for each topic
+- 📅 Schedules posts in your Telegram channel with customizable intervals
+- 📊 Provides console output with generated topics and scheduling status
 
-## Технологии
+## Prerequisites
 
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- GSAP для анимаций
-- Web Audio API для звуков
-- LocalStorage для сохранения данных
+- Python 3.7 or higher
+- A Telegram bot token (from [@BotFather](https://t.me/BotFather))
+- Your Telegram channel ID
+- OpenAI API key (from [OpenAI](https://platform.openai.com/))
 
-## Установка
+## Setup
 
-1. Клонируйте репозиторий:
+1. Clone this repository or download the files.
+
+2. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Create a `.env` file in the project directory with your API tokens:
+   ```
+   # Telegram API credentials
+   TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+   TELEGRAM_CHAT_ID=your_telegram_chat_id_here
+   
+   # OpenAI API credentials
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+4. Make sure your Telegram bot:
+   - Is added to your channel as an administrator
+   - Has the permission to post messages
+
+## Usage
+
+Run the assistant with:
+
 ```bash
-git clone https://github.com/DmitrySuccessful/MyShop.git
+python telegram_assistant.py
 ```
 
-2. Откройте index.html в браузере или используйте локальный сервер.
+Alternatively, use the provided shell script:
 
-## Использование
-
-### Магазин
-
-- Просматривайте товары в каталоге
-- Используйте фильтры по категориям и сортировку
-- Добавляйте товары в корзину
-- Применяйте заработанные бонусы при оформлении заказа
-
-### Мини-игра
-
-- Нажмите "Начать игру" в разделе игры
-- Ловите появляющихся зомби кликом мыши
-- Зарабатывайте очки и бонусы
-- Используйте клавиши:
-  - Пробел: пауза/продолжить
-  - R: начать заново
-
-## Разработка
-
-Структура проекта:
-```
-src/
-  ├── css/
-  │   ├── style.css
-  │   └── game.css
-  ├── js/
-  │   ├── state.js
-  │   ├── shop.js
-  │   ├── cart.js
-  │   ├── utils.js
-  │   └── game/
-  │       └── main.js
-  └── assets/
-      ├── images/
-      └── sounds/
+```bash
+./run.sh
 ```
 
-## Лицензия
+The assistant will:
+1. Generate 10 topics for product business posts
+2. Create a post for each topic
+3. Schedule the posts in your Telegram channel (first post in 5 minutes, then every 10 minutes)
+4. Display the generated topics and scheduling status in the console
 
-MIT License
+## Customization
 
-## Автор
+You can customize the assistant by modifying the following parameters in the `config.py` file:
 
-[DmitrySuccessful](https://github.com/DmitrySuccessful) 
+- Number of topics to generate
+- Post length and style
+- Scheduling intervals
+- OpenAI model and parameters
+- Topic categories
+
+## Troubleshooting
+
+If you encounter any issues:
+
+1. Run the test script to verify your connections:
+   ```bash
+   python test_connection.py
+   ```
+
+2. Check that all API tokens in the `.env` file are correct
+3. Verify that your bot has admin privileges in the channel
+4. Make sure the channel ID is in the correct format
+5. Check the console output for error messages
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 
