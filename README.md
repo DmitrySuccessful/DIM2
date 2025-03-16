@@ -28,8 +28,8 @@ This Python-based assistant automatically generates topics for posts about produ
 3. Create a `.env` file in the project directory with your API tokens:
    ```
    # Telegram API credentials
-   TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
-   TELEGRAM_CHAT_ID=your_telegram_chat_id_here
+   TELEGRAM_BOT_TOKEN=7710421194:AAEu7C__6QTwPdXlSRDdESM6ChGF-UWvnxw
+   TELEGRAM_CHAT_ID=-1002075144709
    
    # OpenAI API credentials
    OPENAI_API_KEY=your_openai_api_key_here

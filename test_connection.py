@@ -3,7 +3,7 @@
 
 """
 Test script for the Telegram Assistant.
-This script helps users verify their Telegram bot and OpenAI API connections.
+This script helps users verify their Telegram bot connection.
 """
 
 import os
@@ -12,17 +12,16 @@ import requests
 import json
 from datetime import datetime
 from dotenv import load_dotenv
-from openai import OpenAI
 
 def print_header():
     """Print the test header."""
     print("=" * 80)
-    print("                  CONNECTION TEST")
+    print("                  TELEGRAM CONNECTION TEST")
     print("=" * 80)
-    print("\nThis script will test your Telegram bot and OpenAI API connections.\n")
+    print("\nThis script will test your Telegram bot connection.\n")
 
-def test_connections():
-    """Test the Telegram bot and OpenAI API connections."""
+def test_telegram_connection():
+    """Test the Telegram bot connection."""
     print_header()
     
     # Load environment variables
@@ -31,39 +30,16 @@ def test_connections():
     # Get API tokens from environment variables
     telegram_bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
     telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
-    openai_api_key = os.getenv('OPENAI_API_KEY')
     
     # Check if all required environment variables are set
-    if not all([telegram_bot_token, telegram_chat_id, openai_api_key]):
+    if not all([telegram_bot_token, telegram_chat_id]):
         print("❌ ERROR: Missing required environment variables.")
         print("Please run setup.py to configure your environment variables.")
         return False
     
     print(f"✓ Environment variables loaded successfully.")
-    
-    # Test OpenAI API connection
-    print("\nTesting OpenAI API connection...")
-    
-    try:
-        client = OpenAI(api_key=openai_api_key)
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": "Say 'OpenAI connection successful' in one short sentence."}
-            ],
-            max_tokens=20
-        )
-        
-        response_text = response.choices[0].message.content.strip()
-        
-        print(f"✓ OpenAI API connection is valid.")
-        print(f"  Response: {response_text}")
-    
-    except Exception as e:
-        print(f"❌ ERROR: Failed to connect to OpenAI API.")
-        print(f"  Error: {e}")
-        return False
+    print(f"  Bot Token: {telegram_bot_token}")
+    print(f"  Chat ID: {telegram_chat_id}")
     
     # Test the bot token
     print("\nTesting Telegram bot token...")
@@ -121,14 +97,14 @@ def test_connections():
         return False
     
     # All tests passed
-    print("\n✅ All tests passed! Your connections are configured correctly.")
+    print("\n✅ All tests passed! Your Telegram bot is configured correctly.")
     print("You can now run the Telegram Assistant with: python telegram_assistant.py")
     
     return True
 
 if __name__ == "__main__":
     try:
-        test_connections()
+        test_telegram_connection()
     except KeyboardInterrupt:
         print("\n\nTest cancelled by user.")
         sys.exit(1)
